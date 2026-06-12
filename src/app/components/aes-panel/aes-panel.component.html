@@ -1,0 +1,200 @@
+<div class="aes-panel">
+  
+  <!-- Заголовок -->
+  <div class="panel-header">
+    <span class="panel-gost">FIPS 197</span>
+    <h2 class="panel-title">AES</h2>
+    <div class="panel-line"></div>
+  </div>
+
+  <!-- Характеристики -->
+  <div class="aes-specs-row">
+    <div class="aes-spec-item"><span class="aes-spec-label">Размер блока</span><span class="aes-spec-value">128 бит</span></div>
+    <div class="aes-spec-item"><span class="aes-spec-label">Размер ключа</span><span class="aes-spec-value">128 / 192 / 256 бит</span></div>
+    <div class="aes-spec-item"><span class="aes-spec-label">Раундов</span><span class="aes-spec-value">10 / 12 / 14</span></div>
+    <div class="aes-spec-item"><span class="aes-spec-label">Структура</span><span class="aes-spec-value">SP-сеть</span></div>
+  </div>
+
+  <!-- Ввод -->
+  <div class="input-section">
+    <div class="input-row">
+      <div class="input-group"><label>Текст</label><input [(ngModel)]="text" (input)="onTextChange()" placeholder="helloww" maxlength="16"></div>
+      <div class="input-group"><label>Ключ</label><input [(ngModel)]="key" (input)="onKeyChange()" placeholder="12345678"></div>
+    </div>
+
+    <div class="key-size-section">
+      <span class="key-size-label">Размер ключа</span>
+      <div class="key-size-cards">
+        <div class="key-size-card" [class.active]="keySize === 128" (click)="keySize = 128; onKeySizeChange()"><span class="key-size-name">128 бит</span><span class="key-size-rounds">10 раундов</span></div>
+        <div class="key-size-card" [class.active]="keySize === 192" (click)="keySize = 192; onKeySizeChange()"><span class="key-size-name">192 бит</span><span class="key-size-rounds">12 раундов</span></div>
+        <div class="key-size-card" [class.active]="keySize === 256" (click)="keySize = 256; onKeySizeChange()"><span class="key-size-name">256 бит</span><span class="key-size-rounds">14 раундов</span></div>
+      </div>
+    </div>
+
+    <div class="mode-section">
+      <span class="mode-section-label">Режим</span>
+      <div class="mode-cards">
+        <div class="mode-card" [class.active]="mode === 'ECB'" (click)="mode = 'ECB'; onModeChange()"><span class="mode-name">ECB</span><span class="mode-hint">каждый блок отдельно</span></div>
+        <div class="mode-card" [class.active]="mode === 'CBC'" (click)="mode = 'CBC'; onModeChange()"><span class="mode-name">CBC</span><span class="mode-hint">цепочка блоков</span></div>
+        <div class="mode-card" [class.active]="mode === 'CTR'" (click)="mode = 'CTR'; onModeChange()"><span class="mode-name">CTR</span><span class="mode-hint">потоковое шифрование</span></div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button (click)="encrypt()" [disabled]="!text || !key" class="btn btn-primary">Зашифровать</button>
+      <button (click)="decrypt()" [disabled]="!encryptedText || !key" class="btn btn-outline">Расшифровать</button>
+      <button (click)="toggleAesRounds()" class="btn btn-ghost" [disabled]="!isRoundsAvailable()">{{ showAesRounds ? 'Скрыть раунды' : 'Показать раунды' }}</button>
+    </div>
+  </div>
+
+  <!-- Результаты -->
+  <div class="result-section" *ngIf="encryptedText && !decryptedResult"><h3 class="result-title">Результат шифрования (Base64)</h3><div class="result-box">{{ encryptedText }}</div></div>
+  <div class="result-section" *ngIf="decryptedResult"><h3 class="result-title">Результат расшифрования</h3><div class="result-box success">{{ decryptedResult }}</div></div>
+
+  <!-- ДИНАМИЧЕСКАЯ СХЕМА ЛАВИННОГО ЭФФЕКТА -->
+  <div class="avalanche-section">
+    <div class="avalanche-header">
+      <h3>Лавинный эффект</h3>
+      <button (click)="runAvalancheTest()" class="btn btn-accent">Запустить тест</button>
+    </div>
+
+    <!-- Схема процесса -->
+    <div class="avalanche-scheme" *ngIf="showScheme">
+      <div class="scheme-container">
+        <div class="scheme-block" [class.active]="animationStep >= 1">
+          <div class="scheme-title"> Исходный текст</div>
+          <div class="text-display">
+            <span *ngFor="let ch of text.split(''); let i = index" [class.highlight]="animationStep >= 1 && i === 0">{{ ch }}</span>
+          </div>
+          <div class="bytes-display" *ngIf="animationStep >= 3"><strong>Hex:</strong> {{ getFirstBytes() }}</div>
+        </div>
+
+        <div class="scheme-arrow" [class.visible]="animationStep >= 2">
+          <span class="arrow-text">AES-128</span>
+          <div class="arrow-line">→</div>
+        </div>
+
+        <div class="scheme-block" [class.active]="animationStep >= 1">
+          <div class="scheme-title"> Изменённый текст</div>
+          <div class="text-display">
+            <span *ngFor="let ch of mutatedText.split(''); let i = index" 
+                  [class.highlight]="animationStep >= 1 && i === 0"
+                  [class.changed]="animationStep >= 1 && i === 0">{{ ch }}</span>
+          </div>
+          <div class="bytes-display" *ngIf="animationStep >= 3"><strong>Hex:</strong> {{ getMutatedFirstBytes() }}</div>
+        </div>
+      </div>
+
+      <div class="down-arrow" [class.visible]="animationStep >= 3">
+        <span class="arrow-down">▼ ШИФРОВАНИЕ ▼</span>
+      </div>
+
+      <div class="comparison-result" [class.visible]="animationStep >= 4">
+        <div class="result-stats">
+          <div class="stat-red"> Изменилось: {{ diffCount }}/128 бит ({{ (diffCount/128*100).toFixed(1) }}%)</div>
+          <div class="stat-gray"> Не изменилось: {{ 128-diffCount }}/128 бит ({{ ((128-diffCount)/128*100).toFixed(1) }}%)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Визуализация битов (появляется после схемы) -->
+    <div class="avalanche-content" *ngIf="showAvalanche && animationStep >= 4">
+      <div class="stats-cards">
+        <div class="stat-card changed-card"><div class="stat-label">Изменилось</div><div class="stat-value">{{ (diffCount/128*100).toFixed(1) }}%</div><div class="stat-count">({{ diffCount }}/128 бит)</div></div>
+        <div class="stat-card unchanged-card"><div class="stat-label">Совпало</div><div class="stat-value">{{ ((128-diffCount)/128*100).toFixed(1) }}%</div><div class="stat-count">({{ 128-diffCount }}/128 бит)</div></div>
+      </div>
+
+      <div class="bit-matrix-container">
+        <div class="byte-grid">
+          <div *ngFor="let byte of bitMatrix; let byteIdx = index" class="byte-card">
+            <div class="byte-header"><span>Байт {{ byteIdx }}</span><span class="byte-hex">{{ getByteHex(byte) }}</span></div>
+            <div class="bits">
+              <span *ngFor="let bit of byte" class="bit" [class.changed]="bit.isChanged" [class.same]="!bit.isChanged">{{ bit.value }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-bar-container">
+        <div class="progress-bar"><div class="progress-fill" [style.width.%]="(diffCount/128*100)"></div></div>
+        <div class="progress-note">
+          <span *ngIf="(diffCount/128*100) >= 45 && (diffCount/128*100) <= 55"> Отличный лавинный эффект (близко к 50%)</span>
+          <span *ngIf="(diffCount/128*100) > 55"> Лавинный эффект выше идеала</span>
+          <span *ngIf="(diffCount/128*100) < 45"> Лавинный эффект ниже идеала</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- РАУНДЫ -->
+  <div class="rounds-section" *ngIf="showAesRounds && aesRoundsHistory.length > 0 && isRoundsAvailable()">
+    <h3>SP-сеть «AES» — Визуализация раундов</h3>
+    <div class="round-controls">
+      <button (click)="previousAesRound()" [disabled]="aesRoundIndex === 0">← Предыдущий</button>
+      <span>Раунд {{ currentAesRound }} / {{ totalAesRounds }}</span>
+      <button (click)="nextAesRound()" [disabled]="aesRoundIndex === aesRoundsHistory.length - 1">Следующий →</button>
+    </div>
+    <div *ngIf="currentAesRoundData" class="round-matrices">
+  <!-- Вход в раунд -->
+  <div class="matrix-card">
+    <h4>Вход в раунд</h4>
+    <table class="matrix-table">
+      <tr *ngFor="let row of [0,1,2,3]">
+        <td *ngFor="let col of [0,1,2,3]">{{ getCellValue(currentAesRoundData.inputState, row, col) }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- После SubBytes -->
+  <div class="matrix-card">
+    <h4>После SubBytes</h4>
+    <table class="matrix-table">
+      <tr *ngFor="let row of [0,1,2,3]">
+        <td *ngFor="let col of [0,1,2,3]">{{ getCellValue(currentAesRoundData.afterSubBytes, row, col) }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- После ShiftRows -->
+  <div class="matrix-card">
+    <h4>После ShiftRows</h4>
+    <table class="matrix-table">
+      <tr *ngFor="let row of [0,1,2,3]">
+        <td *ngFor="let col of [0,1,2,3]">{{ getCellValue(currentAesRoundData.afterShiftRows, row, col) }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- После MixColumns -->
+  <div class="matrix-card" *ngIf="currentAesRoundData.afterMixColumns">
+    <h4>После MixColumns</h4>
+    <table class="matrix-table">
+      <tr *ngFor="let row of [0,1,2,3]">
+        <td *ngFor="let col of [0,1,2,3]">{{ getCellValue(currentAesRoundData.afterMixColumns, row, col) }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Раундовый ключ -->
+  <div class="matrix-card">
+    <h4>Раундовый ключ K{{ currentAesRound }}</h4>
+    <table class="matrix-table">
+      <tr *ngFor="let row of [0,1,2,3]">
+        <td *ngFor="let col of [0,1,2,3]">{{ getCellValue(currentAesRoundData.roundKey, row, col) }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Выход -->
+  <div class="matrix-card">
+    <h4>Выход (AddRoundKey)</h4>
+    <table class="matrix-table">
+      <tr *ngFor="let row of [0,1,2,3]">
+        <td *ngFor="let col of [0,1,2,3]">{{ getCellValue(currentAesRoundData.afterAddRoundKey, row, col) }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+  </div>
+
+</div>

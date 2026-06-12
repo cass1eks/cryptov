@@ -1,0 +1,148 @@
+<div class="dark-landing">
+  
+  <!-- Шапка -->
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-text">CryptoVisualizer</span>
+      </div>
+      <nav class="nav">
+        <a routerLink="/" class="nav-link active" id="nav-home">Главная</a>
+
+        <div class="nav-dropdown">
+          <span class="nav-link" id="nav-algorithms" (click)="scrollToAlgorithms()">Алгоритмы</span>
+          <div class="dropdown-menu">
+            <a (click)="goToDetailPage('aes')" class="dropdown-item">AES</a>
+            <a (click)="goToDetailPage('des')" class="dropdown-item">DES</a>
+            <a (click)="goToDetailPage('kuznechik')" class="dropdown-item">Кузнечик</a>
+          </div>
+        </div>
+
+        <a routerLink="/experiments" class="nav-link" id="nav-experiments">Эксперименты</a>
+
+      </nav>
+      <div class="blob-top-left"></div>
+      <div class="blob-bottom-right"></div>
+    </div>
+  </header>
+
+  <!-- ПОДЛОЖКА -->
+  <div class="main-wrapper">
+
+    <!-- Герой -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <p class="hero-label">AES / DES / ГОСТ</p>
+          <h1 class="hero-title">
+            Исследование структуры<br>
+            современных алгоритмов<br>
+            <span class="glitch-text">шифрования</span>
+          </h1>
+          <div class="hero-buttons">
+            <a routerLink="/algorithms/aes" class="btn-primary">Начать исследование →</a>
+            <a routerLink="/experiments" class="btn-secondary">Эксперименты</a>
+          </div>
+          <div class="hero-line"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Карточки алгоритмов -->
+    <section id="algorithms" class="algorithms">
+      <div class="container">
+        <h2 class="section-title">Алгоритмы</h2>
+        <p class="section-subtitle">Три ключевых стандарта блочного шифрования</p>
+        
+        <div class="cards-grid">
+          <!-- AES -->
+          <div class="algo-card" (click)="goToDetailPage('aes')">
+            <div class="card-tag">FIPS 197</div>
+            <h3>AES</h3>
+            <p class="card-desc">
+              <span class="desc-bold">Advanced Encryption Standard</span>
+              — современный стандарт симметричного шифрования. 128-битные блоки, ключи до 256 бит.
+            </p>
+            <div class="card-footer">
+              <span (click)="openAlgorithm('aes'); $event.stopPropagation()">Визуализация</span>
+              <span (click)="goToDetailPage('aes'); $event.stopPropagation()">Подробнее →</span>
+            </div>
+          </div>
+
+          <!-- DES -->
+          <div class="algo-card" (click)="goToDetailPage('des')">
+            <div class="card-tag">FIPS 46-3</div>
+            <h3>DES</h3>
+            <p class="card-desc"><span class="desc-bold">Data Encryption Standard</span> — исторический алгоритм, положивший начало современной криптографии. Сеть Фейстеля, 16 раундов.</p>
+            <div class="card-footer">
+              <span (click)="openAlgorithm('des'); $event.stopPropagation()">Визуализация</span>
+              <span (click)="goToDetailPage('des'); $event.stopPropagation()">Подробнее →</span>
+            </div>
+          </div>
+
+          <!-- Кузнечик -->
+          <div class="algo-card" (click)="goToDetailPage('kuznechik')">
+            <div class="card-tag">ГОСТ 34.12-2015</div>
+            <h3>Кузнечик</h3>
+            <p class="card-desc"><span class="desc-bold">Российский стандарт блочного шифрования</span> SP-сеть, 256-битный ключ, 10 раундов преобразований.</p>
+            <div class="card-footer">
+              <span (click)="openAlgorithm('kuznechik'); $event.stopPropagation()">Визуализация</span>
+              <span (click)="goToDetailPage('kuznechik'); $event.stopPropagation()">Подробнее →</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-line"></div>
+      </div>
+    </section>
+
+    <!-- Эксперименты -->
+    <section id="experiments" class="experiments-preview">
+      <div class="container">
+        <div class="exp-card">
+          <h2>Эксперименты</h2>
+          <p>Проверьте алгоритмы в деле: замер скорости, лавинный эффект, сравнение</p>
+          <a routerLink="/experiments" class="btn-experiments">Перейти к экспериментам →</a>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /main-wrapper -->
+
+  <!-- Подвал ВНЕ подложки -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-info">
+          <h3>Дипломная работа</h3>
+          <p>Сравнительный анализ современных алгоритмов блочного шифрования</p>
+          <p class="footer-year">© 2026</p>
+        </div>
+        <div class="footer-links">
+          <h4>Алгоритмы</h4>
+          <a (click)="goToDetailPage('aes')">AES</a>
+          <a (click)="goToDetailPage('des')">DES</a>
+          <a (click)="goToDetailPage('kuznechik')">Кузнечик</a>
+        </div>
+        <div class="footer-links">
+          <h4>Теория</h4>
+          <a (click)="goToTheoryPage('aes')">AES</a>
+          <a (click)="goToTheoryPage('des')">DES</a>
+          <a (click)="goToTheoryPage('kuznechik')">Кузнечик</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="blob-blue"></div>
+
+  <!-- Модальное окно -->
+  <div class="modal" *ngIf="activeAlgorithm" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeModal()">×</button>
+      <app-aes-panel *ngIf="activeAlgorithm === 'aes'"></app-aes-panel>
+      <app-des-panel *ngIf="activeAlgorithm === 'des'"></app-des-panel>
+      <app-kuznechik-panel *ngIf="activeAlgorithm === 'kuznechik'"></app-kuznechik-panel>
+    </div>
+  </div>
+</div>

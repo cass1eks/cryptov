@@ -1,0 +1,321 @@
+<div class="theory-page">
+  <div class="theory-container">
+    
+    <!-- НАВИГАЦИЯ -->
+    <nav class="top-nav">
+      <a routerLink="/">ГЛАВНАЯ</a>
+      <a routerLink="/algorithms/aes">ДЕТАЛИЗАЦИЯ</a>
+      <a routerLink="/theory/aes" class="active">ТЕОРИЯ</a>
+    </nav>
+
+    <h1>📚 Теория: Advanced Encryption Standard (AES)</h1>
+    
+    <!-- ОГЛАВЛЕНИЕ -->
+    <div class="table-of-contents">
+      <h3>📑 Содержание</h3>
+      <ol>
+        <li><a (click)="scrollTo('intro')">Что такое AES — простыми словами</a></li>
+        <li><a (click)="scrollTo('how-works')">Как работает AES — наглядно</a></li>
+        <li><a (click)="scrollTo('byte-journey')">Путешествие одного байта</a></li>
+        <li><a (click)="scrollTo('why-each')">Зачем нужен каждый шаг?</a></li>
+        <li><a (click)="scrollTo('comparison')">AES vs другие алгоритмы</a></li>
+        <li><a (click)="scrollTo('sbox')">S-Box таблица</a></li>
+        <li><a (click)="scrollTo('modes')">Режимы работы</a></li>
+        <li><a (click)="scrollTo('security')">Безопасность</a></li>
+      </ol>
+    </div>
+    
+    <!-- 1. ВВЕДЕНИЕ -->
+    <h2 id="intro">1. Что такое AES — простыми словами</h2>
+    <p>
+      <strong>AES</strong> (Advanced Encryption Standard) — это <strong>симметричный блочный</strong> 
+      алгоритм шифрования. Это значит, что:
+    </p>
+    <ul>
+      <li><strong>Симметричный</strong> — один и тот же ключ для шифрования и расшифровки</li>
+      <li><strong>Блочный</strong> — данные разбиваются на блоки по 128 бит (16 байт)</li>
+    </ul>
+    <p>
+      Если сообщение короче — его <strong>дополняют</strong> (padding). Если длиннее — <strong>разбивают</strong> на блоки.
+    </p>
+    
+    <div class="fun-fact">
+      <span class="fact-icon">💡</span>
+      <div class="fact-content">
+        <strong>Интересный факт:</strong> оригинальное название алгоритма — <strong>Rijndael</strong>, 
+        по фамилиям бельгийских криптографов Joan Daemen и Vincent Rijmen. 
+        NIST немного адаптировал его и получил AES.
+      </div>
+    </div>
+
+    <!-- 2. КАК РАБОТАЕТ AES — НАГЛЯДНО -->
+    <h2 id="how-works">2. Как работает AES — наглядно</h2>
+    
+    <!-- Шаг 1: Подготовка -->
+    <div class="step-explanation">
+      <div class="step-header">
+        <span class="step-icon">📦</span>
+        <h3>Шаг 1: Подготовка данных</h3>
+      </div>
+      <p>Текст <code>"hello"</code> (5 байт) добивается до 16 байт с помощью padding:</p>
+      <div class="step-visual">
+        <div class="byte-display-box">
+          <span class="byte-box green">68</span><span class="byte-box green">65</span>
+          <span class="byte-box green">6C</span><span class="byte-box green">6C</span>
+          <span class="byte-box green">6F</span>
+          <span class="byte-box gray">0B</span><span class="byte-box gray">0B</span>
+          <span class="byte-box gray">0B</span><span class="byte-box gray">0B</span>
+          <span class="byte-box gray">0B</span><span class="byte-box gray">0B</span>
+          <span class="byte-box gray">0B</span><span class="byte-box gray">0B</span>
+          <span class="byte-box gray">0B</span><span class="byte-box gray">0B</span>
+          <span class="byte-box gray">0B</span><span class="byte-box gray">0B</span>
+        </div>
+        <p class="step-caption">🟢 Байты текста  ⬜ Padding (заглушки)</p>
+      </div>
+    </div>
+
+    <!-- Шаг 2: 10 раундов -->
+    <div class="step-explanation">
+      <div class="step-header">
+        <span class="step-icon">🔄</span>
+        <h3>Шаг 2: 10 раундов перемешивания</h3>
+      </div>
+      <p>Данные проходят через <strong>10 раундов</strong>, каждый состоит из 4 операций:</p>
+      
+      <div class="rounds-visual">
+        <div class="round-card">
+          <div class="round-icon">🔄</div>
+          <h4>SubBytes</h4>
+          <p>Замена каждого байта по секретной таблице (S-Box)</p>
+          <div class="round-example"><code>68 → 45</code><code>65 → 4D</code><code>6C → 50</code></div>
+        </div>
+        <div class="round-arrow">→</div>
+        <div class="round-card">
+          <div class="round-icon">↔️</div>
+          <h4>ShiftRows</h4>
+          <p>Сдвиг строк: 1-я без сдвига, 2-я на 1, 3-я на 2, 4-я на 3</p>
+          <div class="round-example"><code>Строка 2: [65,0B,0B,0B] → [0B,0B,0B,65]</code></div>
+        </div>
+        <div class="round-arrow">→</div>
+        <div class="round-card">
+          <div class="round-icon">✖️</div>
+          <h4>MixColumns</h4>
+          <p>Перемешивание каждого столбца — один байт влияет на весь столбец</p>
+          <div class="round-example"><code>A' = 2·A ⊕ 3·B ⊕ C ⊕ D</code></div>
+        </div>
+        <div class="round-arrow">→</div>
+        <div class="round-card">
+          <div class="round-icon">🔑</div>
+          <h4>AddRoundKey</h4>
+          <p>XOR с раундовым ключом — единственный шаг, зависящий от пароля</p>
+          <div class="round-example"><code>Data ⊕ Key = Result</code></div>
+        </div>
+      </div>
+      
+      <p class="round-note">💡 9 раундов — полные, 10-й — без MixColumns</p>
+    </div>
+
+    <!-- Шаг 3: Результат -->
+    <div class="step-explanation">
+      <div class="step-header">
+        <span class="step-icon">🎯</span>
+        <h3>Шаг 3: Результат</h3>
+      </div>
+      <p>После 10 раундов данные полностью неузнаваемы:</p>
+      <div class="result-transform">
+        <code class="plain">hello</code>
+        <span class="transform-arrow">→</span>
+        <code class="cipher">x7!qR#2mK9$pL&#64;5w</code>
+      </div>
+    </div>
+
+    <!-- АНАЛОГИЯ С КАРТАМИ -->
+    <div class="analogy-box">
+      <h3>🃏 Аналогия с колодой карт</h3>
+      <p>Представь, что ты перемешиваешь колоду карт:</p>
+      <div class="analogy-grid">
+        <div class="analogy-item"><span class="analogy-emoji">🔄</span><strong>SubBytes</strong><p>Замена каждой карты по таблице</p></div>
+        <div class="analogy-item"><span class="analogy-emoji">↔️</span><strong>ShiftRows</strong><p>Сдвиг рядов карт</p></div>
+        <div class="analogy-item"><span class="analogy-emoji">✖️</span><strong>MixColumns</strong><p>Тасовка столбцов</p></div>
+        <div class="analogy-item"><span class="analogy-emoji">🔑</span><strong>AddRoundKey</strong><p>Добавление карт из секретной колоды</p></div>
+      </div>
+      <p class="analogy-conclusion">После 10 перемешиваний <strong>никто не узнает исходный порядок карт!</strong></p>
+    </div>
+
+    <!-- 3. ПУТЕШЕСТВИЕ БАЙТА -->
+    <h2 id="byte-journey">3. Путешествие одного байта</h2>
+    <p>Проследим, как меняется байт <code>'h'</code> (68) на каждом раунде:</p>
+    
+    <div class="byte-journey">
+      <div class="journey-row">
+        <span class="journey-label">Исходный:</span>
+        <span class="journey-byte original">68</span>
+        <span class="journey-desc">'h' в открытом тексте</span>
+      </div>
+      <div class="journey-row">
+        <span class="journey-label">Раунд 0:</span>
+        <span class="journey-byte">68</span><span class="journey-arrow">→</span><span class="journey-byte">60</span>
+        <span class="journey-desc">AddRoundKey</span>
+      </div>
+      <div class="journey-row">
+        <span class="journey-label">Раунд 1:</span>
+        <span class="journey-byte">60</span><span class="journey-arrow">→</span><span class="journey-byte">D0</span><span class="journey-arrow">→</span><span class="journey-byte">A2</span><span class="journey-arrow">→</span><span class="journey-byte">89</span>
+        <span class="journey-desc">SubBytes → MixCol → AddKey</span>
+      </div>
+      <div class="journey-row">
+        <span class="journey-label">Раунд 10:</span>
+        <span class="journey-byte">XX</span><span class="journey-arrow">→</span><span class="journey-byte final">69</span>
+        <span class="journey-desc">Финальный результат!</span>
+      </div>
+    </div>
+
+    <!-- 4. ЗАЧЕМ НУЖЕН КАЖДЫЙ ШАГ -->
+    <h2 id="why-each">4. Зачем нужен каждый шаг?</h2>
+    
+    <div class="faq-list">
+      <div class="faq-item" (click)="faqOpen = (faqOpen === 1 ? 0 : 1)">
+        <div class="faq-question" [class.active]="faqOpen === 1">
+          <span>🔄 Зачем нужен SubBytes?</span>
+          <span class="faq-icon">{{ faqOpen === 1 ? '−' : '+' }}</span>
+        </div>
+        <div class="faq-answer" *ngIf="faqOpen === 1">
+          <p>SubBytes создаёт <strong>нелинейность</strong>. Без неё шифр был бы уязвим для линейного криптоанализа — можно было бы решить систему уравнений и найти ключ.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item" (click)="faqOpen = (faqOpen === 2 ? 0 : 2)">
+        <div class="faq-question" [class.active]="faqOpen === 2">
+          <span>↔️ Зачем нужен ShiftRows?</span>
+          <span class="faq-icon">{{ faqOpen === 2 ? '−' : '+' }}</span>
+        </div>
+        <div class="faq-answer" *ngIf="faqOpen === 2">
+          <p>ShiftRows <strong>перемешивает байты между столбцами</strong>. Это создаёт диффузию — каждый байт влияет на соседние столбцы в следующем раунде.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item" (click)="faqOpen = (faqOpen === 3 ? 0 : 3)">
+        <div class="faq-question" [class.active]="faqOpen === 3">
+          <span>✖️ Зачем нужен MixColumns?</span>
+          <span class="faq-icon">{{ faqOpen === 3 ? '−' : '+' }}</span>
+        </div>
+        <div class="faq-answer" *ngIf="faqOpen === 3">
+          <p>MixColumns <strong>распространяет влияние одного байта на весь столбец</strong>. Изменение одного бита во входных данных меняет весь блок — это лавинный эффект. Последний раунд без MixColumns для обратимости.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item" (click)="faqOpen = (faqOpen === 4 ? 0 : 4)">
+        <div class="faq-question" [class.active]="faqOpen === 4">
+          <span>🔑 Зачем нужен AddRoundKey?</span>
+          <span class="faq-icon">{{ faqOpen === 4 ? '−' : '+' }}</span>
+        </div>
+        <div class="faq-answer" *ngIf="faqOpen === 4">
+          <p>Это <strong>единственный шаг, зависящий от ключа</strong>. Все остальные операции — открытый алгоритм. Без ключа расшифровать данные невозможно.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item" (click)="faqOpen = (faqOpen === 5 ? 0 : 5)">
+        <div class="faq-question" [class.active]="faqOpen === 5">
+          <span>🔢 Почему именно 10 раундов?</span>
+          <span class="faq-icon">{{ faqOpen === 5 ? '−' : '+' }}</span>
+        </div>
+        <div class="faq-answer" *ngIf="faqOpen === 5">
+          <p>Уже после 4-5 раундов достигается полное перемешивание. 10 раундов дают <strong>запас прочности</strong> против будущих атак. AES-192 (12 раундов) и AES-256 (14 раундов) — ещё надёжнее.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. AES vs ДРУГИЕ -->
+    <h2 id="comparison">5. AES vs другие алгоритмы</h2>
+    
+    <div class="comparison-cards">
+      <div class="compare-card aes">
+        <div class="compare-header">🔷 AES</div>
+        <div class="compare-body">
+          <p>"Сложный сейф"</p>
+          <ul>
+            <li>10-14 проверок (раундов)</li>
+            <li>Ключ 128-256 бит</li>
+            <li>Блок 128 бит</li>
+            <li>Современный стандарт</li>
+          </ul>
+        </div>
+      </div>
+      <div class="compare-card des">
+        <div class="compare-header">🔶 DES</div>
+        <div class="compare-body">
+          <p>"Старый замок"</p>
+          <ul>
+            <li>16 проверок (раундов)</li>
+            <li>Ключ всего 56 бит</li>
+            <li>Блок 64 бит</li>
+            <li>Устарел, взломан</li>
+          </ul>
+        </div>
+      </div>
+      <div class="compare-card kuz">
+        <div class="compare-header">💚 Кузнечик</div>
+        <div class="compare-body">
+          <p>"Российский сейф"</p>
+          <ul>
+            <li>10 проверок (раундов)</li>
+            <li>Ключ 256 бит</li>
+            <li>Блок 128 бит</li>
+            <li>ГОСТ стандарт</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S-Box -->
+    <h2 id="sbox">6. S-Box таблица</h2>
+    <p>Нелинейная замена каждого байта через таблицу 16×16. <strong>Пример:</strong> <code>0xFE</code> → <code>0xBB</code>.</p>
+    <div class="table-scroll">
+      <table class="theory-table sbox-table">
+        <tr><th></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+        <tr><td>0</td><td>63</td><td>7C</td><td>77</td><td>7B</td><td>F2</td><td>6B</td><td>6F</td><td>C5</td><td>30</td><td>01</td><td>67</td><td>2B</td><td>FE</td><td>D7</td><td>AB</td><td>76</td></tr>
+        <tr><td>1</td><td>CA</td><td>82</td><td>C9</td><td>7D</td><td>FA</td><td>59</td><td>47</td><td>F0</td><td>AD</td><td>D4</td><td>A2</td><td>AF</td><td>9C</td><td>A4</td><td>72</td><td>C0</td></tr>
+        <tr><td>2</td><td>B7</td><td>FD</td><td>93</td><td>26</td><td>36</td><td>3F</td><td>F7</td><td>CC</td><td>34</td><td>A5</td><td>E5</td><td>F1</td><td>71</td><td>D8</td><td>31</td><td>15</td></tr>
+        <tr><td>3</td><td>04</td><td>C7</td><td>23</td><td>C3</td><td>18</td><td>96</td><td>05</td><td>9A</td><td>07</td><td>12</td><td>80</td><td>E2</td><td>EB</td><td>27</td><td>B2</td><td>75</td></tr>
+        <tr><td>4</td><td>09</td><td>83</td><td>2C</td><td>1A</td><td>1B</td><td>6E</td><td>5A</td><td>A0</td><td>52</td><td>3B</td><td>D6</td><td>B3</td><td>29</td><td>E3</td><td>2F</td><td>84</td></tr>
+        <tr><td>5</td><td>53</td><td>D1</td><td>00</td><td>ED</td><td>20</td><td>FC</td><td>B1</td><td>5B</td><td>6A</td><td>CB</td><td>BE</td><td>39</td><td>4A</td><td>4C</td><td>58</td><td>CF</td></tr>
+        <tr><td>6</td><td>D0</td><td>EF</td><td>AA</td><td>FB</td><td>43</td><td>4D</td><td>33</td><td>85</td><td>45</td><td>F9</td><td>02</td><td>7F</td><td>50</td><td>3C</td><td>9F</td><td>A8</td></tr>
+        <tr><td>7</td><td>51</td><td>A3</td><td>40</td><td>8F</td><td>92</td><td>9D</td><td>38</td><td>F5</td><td>BC</td><td>B6</td><td>DA</td><td>21</td><td>10</td><td>FF</td><td>F3</td><td>D2</td></tr>
+        <tr><td>8</td><td>CD</td><td>0C</td><td>13</td><td>EC</td><td>5F</td><td>97</td><td>44</td><td>17</td><td>C4</td><td>A7</td><td>7E</td><td>3D</td><td>64</td><td>5D</td><td>19</td><td>73</td></tr>
+        <tr><td>9</td><td>60</td><td>81</td><td>4F</td><td>DC</td><td>22</td><td>2A</td><td>90</td><td>88</td><td>46</td><td>EE</td><td>B8</td><td>14</td><td>DE</td><td>5E</td><td>0B</td><td>DB</td></tr>
+        <tr><td>A</td><td>E0</td><td>32</td><td>3A</td><td>0A</td><td>49</td><td>06</td><td>24</td><td>5C</td><td>C2</td><td>D3</td><td>AC</td><td>62</td><td>91</td><td>95</td><td>E4</td><td>79</td></tr>
+        <tr><td>B</td><td>E7</td><td>C8</td><td>37</td><td>6D</td><td>8D</td><td>D5</td><td>4E</td><td>A9</td><td>6C</td><td>56</td><td>F4</td><td>EA</td><td>65</td><td>7A</td><td>AE</td><td>08</td></tr>
+        <tr><td>C</td><td>BA</td><td>78</td><td>25</td><td>2E</td><td>1C</td><td>A6</td><td>B4</td><td>C6</td><td>E8</td><td>DD</td><td>74</td><td>1F</td><td>4B</td><td>BD</td><td>8B</td><td>8A</td></tr>
+        <tr><td>D</td><td>70</td><td>3E</td><td>B5</td><td>66</td><td>48</td><td>03</td><td>F6</td><td>0E</td><td>61</td><td>35</td><td>57</td><td>B9</td><td>86</td><td>C1</td><td>1D</td><td>9E</td></tr>
+        <tr><td>E</td><td>E1</td><td>F8</td><td>98</td><td>11</td><td>69</td><td>D9</td><td>8E</td><td>94</td><td>9B</td><td>1E</td><td>87</td><td>E9</td><td>CE</td><td>55</td><td>28</td><td>DF</td></tr>
+        <tr><td>F</td><td>8C</td><td>A1</td><td>89</td><td>0D</td><td>BF</td><td>E6</td><td>42</td><td>68</td><td>41</td><td>99</td><td>2D</td><td>0F</td><td>B0</td><td>54</td><td>BB</td><td>16</td></tr>
+      </table>
+    </div>
+
+    <!-- Режимы -->
+    <h2 id="modes">7. Режимы работы</h2>
+    <h3>ECB (Electronic Codebook) — <span class="text-danger">никогда не используйте</span></h3>
+    <p>Каждый блок шифруется независимо. Одинаковые блоки → одинаковый шифротекст.</p>
+    <div class="warning-box"><strong>⚠️ Уязвимость:</strong> если зашифровать изображение в ECB, силуэты объектов останутся видны.</div>
+    <h3>CBC (Cipher Block Chaining) — стандарт де-факто</h3>
+    <p>Каждый блок XOR-ится с предыдущим шифротекстом. Нужен <strong>IV</strong>.</p>
+    <h3>GCM (Galois/Counter Mode) — современный стандарт</h3>
+    <p>Сочетает шифрование с аутентификацией. <strong>Проверяет, не был ли шифротекст изменён.</strong></p>
+
+    <!-- Безопасность -->
+    <h2 id="security">8. Безопасность AES</h2>
+    <p><strong>AES безопасен</strong>, если реализован правильно.</p>
+    <table class="theory-table">
+      <tr><th>Атака</th><th>Описание</th><th>Защита</th></tr>
+      <tr><td>Атаки по времени</td><td>Время шифрования зависит от ключа</td><td>Аппаратное ускорение AES-NI</td></tr>
+      <tr><td>Кэш-атаки</td><td>Утечка через процессорный кэш</td><td>Константное время выполнения</td></tr>
+      <tr><td>Слабые IV</td><td>Повторяющийся вектор в CBC</td><td>Стойкий генератор случайных чисел</td></tr>
+    </table>
+
+    <!-- КНОПКИ -->
+    <div class="back-section">
+      <a routerLink="/algorithms/aes" class="back-button">← К ДЕТАЛИЗАЦИИ AES</a>
+      <a routerLink="/" class="back-button" style="margin-left: 10px;">🏠 НА ГЛАВНУЮ</a>
+    </div>
+
+  </div>
+</div>

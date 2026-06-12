@@ -1,0 +1,326 @@
+<div class="des-panel">
+  
+  <!-- Заголовок -->
+  <div class="panel-header">
+    <span class="panel-gost">FIPS 46-3</span>
+    <h2 class="panel-title">DES</h2>
+    <div class="panel-line"></div>
+  </div>
+
+  <!-- Характеристики -->
+  <div class="des-specs-row">
+    <div class="des-spec-item">
+      <span class="des-spec-label">Размер блока</span>
+      <span class="des-spec-value">64 бит</span>
+    </div>
+    <div class="des-spec-item">
+      <span class="des-spec-label">Размер ключа</span>
+      <span class="des-spec-value">56 бит</span>
+    </div>
+    <div class="des-spec-item">
+      <span class="des-spec-label">Раундов</span>
+      <span class="des-spec-value">16</span>
+    </div>
+    <div class="des-spec-item">
+      <span class="des-spec-label">Структура</span>
+      <span class="des-spec-value">Сеть Фейстеля</span>
+    </div>
+  </div>
+
+  <!-- Ввод -->
+  <div class="input-section">
+    <div class="input-row">
+      <div class="input-group">
+        <label>Текст</label>
+        <input [(ngModel)]="text" placeholder="hello">
+      </div>
+      <div class="input-group">
+        <label>Ключ</label>
+        <input [(ngModel)]="key" placeholder="13456">
+      </div>
+    </div>
+
+    <!-- Режимы -->
+    <div class="mode-section">
+      <span class="mode-section-label">Режим</span>
+      <div class="mode-cards">
+        <div class="mode-card" [class.active]="mode === 'ECB'" (click)="mode = 'ECB'; onModeChange()">
+          <span class="mode-icon"></span><span class="mode-name">ECB</span><span class="mode-hint">каждый блок отдельно</span>
+        </div>
+        <div class="mode-card" [class.active]="mode === 'CBC'" (click)="mode = 'CBC'; onModeChange()">
+          <span class="mode-icon"></span><span class="mode-name">CBC</span><span class="mode-hint">цепочка блоков</span>
+        </div>
+        <div class="mode-card" [class.active]="mode === 'CTR'" (click)="mode = 'CTR'; onModeChange()">
+          <span class="mode-icon"></span><span class="mode-name">CTR</span><span class="mode-hint">потоковое шифрование</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- IV -->
+    <div class="iv-section" *ngIf="showIV">
+      <div class="iv-label-row">
+        <span class="iv-label">{{ mode === 'CTR' ? 'Nonce' : 'IV' }}</span>
+        <span class="iv-badge">{{ mode === 'CTR' ? '8 байт' : 'вектор' }}</span>
+      </div>
+      <input [(ngModel)]="iv" [placeholder]="mode === 'CTR' ? 'Введите Nonce' : 'Введите IV'" class="iv-input" maxlength="8">
+      <p class="iv-hint">{{ mode === 'CBC' ? 'IV добавляет случайность в первый блок' : 'Nonce + счётчик = keystream' }}</p>
+    </div>
+
+    <!-- Кнопки -->
+    <div class="button-group">
+      <button (click)="encrypt()" class="btn btn-primary">Зашифровать</button>
+      <button (click)="decrypt()" class="btn btn-outline">Расшифровать</button>
+      <button (click)="toggleRounds()" class="btn btn-ghost">{{ showRounds ? 'Скрыть раунды' : 'Показать раунды' }}</button>
+    </div>
+  </div>
+
+  <!-- Результаты -->
+  <div class="result-section" *ngIf="result && !decryptedResult">
+    <h3 class="result-title">Результат (Base64)</h3>
+    <div class="result-box">{{ result }}</div>
+  </div>
+
+  <div class="result-section" *ngIf="decryptedResult">
+    <h3 class="result-title">Результат расшифрования</h3>
+    <div class="result-box success">{{ decryptedResult }}</div>
+  </div>
+
+<!-- ЛАВИННЫЙ ЭФФЕКТ С ДИНАМИЧЕСКОЙ СХЕМОЙ -->
+<div class="avalanche-section">
+  <div class="avalanche-header">
+    <h3>Лавинный эффект (DES)</h3>
+    <button (click)="toggleAvalanche()" class="btn btn-accent">
+      {{ showAvalanche ? 'Скрыть тест' : 'Запустить тест' }}
+    </button>
+  </div>
+
+  <!-- Динамическая схема -->
+  <div class="avalanche-scheme" *ngIf="showScheme">
+    <div class="scheme-container">
+      <div class="scheme-block" [class.active]="animationStep >= 1">
+        <div class="scheme-title"> Исходный текст</div>
+        <div class="text-display">
+          <span *ngFor="let ch of text.split(''); let i = index" 
+                [class.highlight]="animationStep >= 1 && i === 0">{{ ch }}</span>
+        </div>
+        <div class="bytes-display" *ngIf="animationStep >= 3">
+          <strong>Hex (первые 4 байта):</strong> {{ getFirstBytes() }}
+        </div>
+      </div>
+
+      <div class="scheme-arrow" [class.visible]="animationStep >= 2">
+        <span class="arrow-text">DES-64</span>
+        <div class="arrow-line">→</div>
+      </div>
+
+      <div class="scheme-block" [class.active]="animationStep >= 1">
+        <div class="scheme-title"> Изменённый текст</div>
+        <div class="text-display">
+          <span *ngFor="let ch of mutatedText.split(''); let i = index" 
+                [class.highlight]="animationStep >= 1 && i === 0"
+                [class.changed]="animationStep >= 1 && i === 0">{{ ch }}</span>
+        </div>
+        <div class="bytes-display" *ngIf="animationStep >= 3">
+          <strong>Hex (первые 4 байта):</strong> {{ getMutatedFirstBytes() }}
+        </div>
+      </div>
+    </div>
+
+    <div class="down-arrow" [class.visible]="animationStep >= 3">
+      <span class="arrow-down">▼ ШИФРОВАНИЕ ▼</span>
+    </div>
+
+    <div class="comparison-result" [class.visible]="animationStep >= 4">
+      <div class="result-stats">
+        <div class="stat-red"> Изменилось: {{ diffCount }}/64 бит ({{ (diffCount/64*100).toFixed(1) }}%)</div>
+        <div class="stat-gray"> Не изменилось: {{ 64-diffCount }}/64 бит ({{ ((64-diffCount)/64*100).toFixed(1) }}%)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Визуализация битов (8 байтов × 8 битов) -->
+  <div class="avalanche-content" *ngIf="showAvalanche && animationStep >= 4">
+    <div class="stats-cards">
+      <div class="stat-card changed-card">
+        <div class="stat-label">Изменилось</div>
+        <div class="stat-value">{{ (diffCount/64*100).toFixed(1) }}%</div>
+        <div class="stat-count">({{ diffCount }}/64 бит)</div>
+      </div>
+      <div class="stat-card unchanged-card">
+        <div class="stat-label">Совпало</div>
+        <div class="stat-value">{{ ((64-diffCount)/64*100).toFixed(1) }}%</div>
+        <div class="stat-count">({{ 64-diffCount }}/64 бит)</div>
+      </div>
+    </div>
+
+    <!-- Матрица битов (8 байтов × 8 битов) -->
+    <div class="bit-matrix-container">
+      <div class="byte-grid-des">
+        <div *ngFor="let byte of bitMatrix; let byteIdx = index" class="byte-card">
+          <div class="byte-header">
+            <span>Байт {{ byteIdx }}</span>
+            <span class="byte-hex">{{ getByteHex(byte) }}</span>
+          </div>
+          <div class="bits">
+            <span *ngFor="let bit of byte" class="bit" 
+                  [class.changed]="bit.isChanged" 
+                  [class.same]="!bit.isChanged">
+              {{ bit.value }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Прогресс-бар -->
+    <div class="progress-bar-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="(diffCount/64*100)"></div>
+      </div>
+      <div class="progress-note">
+        <span *ngIf="(diffCount/64*100) >= 45 && (diffCount/64*100) <= 55"> Отличный лавинный эффект (близко к 50%)</span>
+        <span *ngIf="(diffCount/64*100) > 55"> Лавинный эффект выше идеала</span>
+        <span *ngIf="(diffCount/64*100) < 45"> Лавинный эффект ниже идеала</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- ==================== РАУНДЫ ==================== -->
+  <div *ngIf="showRounds && rounds.length > 0" class="rounds-section">
+    <h3>Сеть Фейстеля (DES)</h3>
+
+    <div class="feistel-diagram">
+      
+      <div class="round-progress">
+        <div class="progress-track">
+          <div class="progress-fill" [style.width]="(currentRound/16*100)+'%'"></div>
+        </div>
+        <span class="progress-label">{{ currentRound }}/16</span>
+      </div>
+
+      <div class="round-controls">
+        <button (click)="previousRound()" [disabled]="roundIndex===0">← Предыдущий</button>
+        <span class="round-indicator">Раунд {{ currentRound }}/16</span>
+        <button (click)="nextRound()" [disabled]="roundIndex===rounds.length-1">Следующий →</button>
+      </div>
+
+      <div class="feistel-cards">
+        
+        <div class="feistel-top-row">
+          <div class="feistel-card">
+            <div class="feistel-card-label">L{{ currentRound-1 }}</div>
+            <div class="feistel-card-value">
+              <span class="bit-group-4" *ngFor="let group of getLBitGroups()">
+                <span *ngFor="let bit of group" class="bit-char unchanged">{{ bit }}</span>
+              </span>
+            </div>
+            <div class="feistel-card-bits">32 бита</div>
+          </div>
+          <div class="feistel-card">
+            <div class="feistel-card-label">R{{ currentRound-1 }}</div>
+            <div class="feistel-card-value">
+              <span class="bit-group-4" *ngFor="let group of getRPrevBitGroups()">
+                <span *ngFor="let bit of group" class="bit-char unchanged">{{ bit }}</span>
+              </span>
+            </div>
+            <div class="feistel-card-bits">32 бита</div>
+          </div>
+        </div>
+
+        <div class="feistel-arrows">
+          <div class="feistel-arrow down">↓ копия</div>
+          <div class="feistel-arrow down">↓ F + K{{ currentRound }}</div>
+        </div>
+
+        <div class="f-card" [class.expanded]="fExpanded">
+          <div class="f-card-header" (click)="fExpanded = !fExpanded">
+            <span class="f-card-title"> F-функция</span>
+            <span class="f-card-toggle">{{ fExpanded ? '▲' : '▼' }}</span>
+          </div>
+          
+          <div class="f-card-body" *ngIf="fExpanded">
+            <div class="f-step-row">
+              <span class="f-step-badge">1</span>
+              <span class="f-step-label">Расширение E</span>
+              <span class="f-step-arrow">32→48 бит</span>
+            </div>
+            
+            <div class="f-step-row">
+              <span class="f-step-badge">2</span>
+              <span class="f-step-label">XOR с ключом K{{ currentRound }}</span>
+              <span class="f-step-arrow">⊕</span>
+            </div>
+            
+            <div class="f-step-row">
+              <span class="f-step-badge">3</span>
+              <span class="f-step-label">S-Box замена</span>
+              <span class="f-step-arrow">48→32 бита</span>
+            </div>
+            
+            <div class="f-sbox-blocks">
+              <span *ngFor="let block of getSBoxBlocks(); let i = index" 
+                    class="f-sbox-block" 
+                    [class.active]="isBlockActive(i)">{{ block }}</span>
+            </div>
+            
+            <div class="f-step-row">
+              <span class="f-step-badge">4</span>
+              <span class="f-step-label">Перестановка P</span>
+              <span class="f-step-arrow">32→32 бита</span>
+            </div>
+          </div>
+          
+          <div class="f-result-row">
+            <span class="f-result-label">Результат F:</span>
+            <div class="f-result-bits">
+              <span class="bit-group-4" *ngFor="let group of getFResultBitGroups()">
+                <span *ngFor="let bit of group; let i = index" 
+                      class="bit-char" 
+                      [class.changed]="isBitChanged(i)" 
+                      [class.unchanged]="!isBitChanged(i)">{{ bit }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="feistel-arrows">
+          <div class="feistel-arrow down">↓</div>
+          <div class="feistel-xor">⊕ XOR</div>
+          <div class="feistel-arrow down">↓</div>
+        </div>
+
+        <div class="feistel-top-row">
+          <div class="feistel-card output">
+            <div class="feistel-card-label">L{{ currentRound }}</div>
+            <div class="feistel-card-value">
+              <span class="bit-group-4" *ngFor="let group of getLBitGroups()">
+                <span *ngFor="let bit of group" class="bit-char unchanged">{{ bit }}</span>
+              </span>
+            </div>
+            <div class="feistel-card-formula">= R{{ currentRound-1 }}</div>
+          </div>
+          <div class="feistel-card output">
+            <div class="feistel-card-label">R{{ currentRound }}</div>
+            <div class="feistel-card-value">
+              <span class="bit-group-4" *ngFor="let group of getRResultBitGroups()">
+                <span *ngFor="let bit of group; let i = index" 
+                      class="bit-char" 
+                      [class.changed]="isRBitChanged(i)" 
+                      [class.unchanged]="!isRBitChanged(i)">{{ bit }}</span>
+              </span>
+            </div>
+            <div class="feistel-card-formula">= L{{ currentRound-1 }} ⊕ F</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bit-legend">
+        <span><span class="legend-dot changed"></span> Изменённый бит</span>
+        <span><span class="legend-dot unchanged"></span> Без изменений</span>
+      </div>
+
+      
+    </div>
+  </div>
+</div>

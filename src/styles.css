@@ -1,1 +1,129 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================ */
+/*              АДАПТИВНАЯ ВЁРСТКА               */
+/* ============================================ */
+
+/* Планшеты и маленькие ноутбуки (до 1024px) */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 20px;
+  }
+  
+  .hero-title {
+    font-size: 42px;
+  }
+  
+  .cards-grid {
+    gap: 16px;
+  }
+  
+  .algo-card {
+    padding: 24px 20px;
+  }
+  
+  .algo-card h3 {
+    font-size: 20px;
+  }
+}
+
+/* Мобильные устройства (до 768px) */
+@media (max-width: 768px) {
+  
+  /* Кнопки героя — вертикально и с отступами */
+  .hero-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px !important;
+    margin-top: 25px;
+  }
+  
+  .hero-buttons .btn-primary,
+  .hero-buttons .btn-secondary {
+    width: 80%;
+    text-align: center;
+    display: inline-block;
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  /* Отступ между кнопками */
+  .hero-buttons .btn-primary {
+    margin-bottom: 0;
+  }
+  
+  /* Линия под кнопками */
+  .hero-buttons::after {
+    margin-top: 30px;
+  }
+  
+  /* ===== АДАПТАЦИЯ ШАПКИ ДЛЯ МОБИЛЬНЫХ ===== */
+  .header .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+  }
+  
+  .logo-text {
+    font-size: 20px;
+  }
+  
+  .nav {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+  
+  .nav-link {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  
+  .dropdown-menu {
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 120px;
+  }
+}
+
+/* Маленькие телефоны (до 480px) */
+@media (max-width: 480px) {
+  .top-nav a {
+    font-size: 0.6rem !important;
+  }
+  
+  .detail-card-content {
+    padding-left: 50px !important;
+  }
+  
+  .detail-card-bg-number,
+  .detail-card-bg-number-right {
+    font-size: 55px !important;
+  }
+  
+  .page-title {
+    font-size: 1.2rem !important;
+  }
+  
+  .hero-title {
+    font-size: 24px !important;
+  }
+  
+  .btn-primary,
+  .btn-secondary,
+  .btn-experiments {
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+  }
+  
+  .modes-comparison-table {
+    font-size: 0.7rem;
+  }
+  
+  .modes-comparison-table th,
+  .modes-comparison-table td {
+    padding: 8px 4px !important;
+  }
+}

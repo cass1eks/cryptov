@@ -1,0 +1,320 @@
+<div class="experiments-page">
+  <div class="exp-container">
+    
+    <!-- НАВИГАЦИЯ -->
+    <nav class="top-nav">
+      <a routerLink="/">ГЛАВНАЯ</a>
+      <a routerLink="/algorithms">АЛГОРИТМЫ</a>
+      <a routerLink="/experiments" class="active">ЭКСПЕРИМЕНТЫ</a>
+    </nav>
+
+    <!-- ЗАГОЛОВОК -->
+    <header class="exp-header">
+      <h1 class="exp-title">ЭКСПЕРИМЕНТЫ</h1>
+      <p class="exp-subtitle">Сравнительный анализ алгоритмов в реальном времени</p>
+    </header>
+
+    <!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
+    <div class="control-panel">
+      <div class="control-row">
+        <div class="control-group">
+          <label>Текст:</label>
+          <input [(ngModel)]="testText" placeholder="Введите текст">
+        </div>
+        <div class="control-group">
+          <label>Ключ:</label>
+          <input [(ngModel)]="testKey" placeholder="Введите ключ">
+        </div>
+        <div class="control-group">
+          <label>Режим:</label>
+          <select [(ngModel)]="testMode" class="mode-select">
+            <option value="ECB">ECB</option>
+            <option value="CBC">CBC</option>
+            <option value="CTR">CTR</option>
+          </select>
+        </div>
+        <button (click)="runAllTests()" class="btn-run-all">
+           Запустить тесты
+        </button>
+      </div>
+      <p class="control-hint"> Выполняется по 1000 итераций для каждого алгоритма</p>
+    </div>
+
+    <!-- ВКЛАДКИ -->
+    <div class="tabs">
+      <button [class.active]="activeTab === 'aes'" (click)="activeTab = 'aes'"> AES</button>
+      <button [class.active]="activeTab === 'des'" (click)="activeTab = 'des'"> DES</button>
+      <button [class.active]="activeTab === 'kuznechik'" (click)="activeTab = 'kuznechik'"> Кузнечик</button>
+      <button [class.active]="activeTab === 'all'" (click)="activeTab = 'all'"> Все вместе</button>
+    </div>
+
+    <!-- РЕЗУЛЬТАТЫ -->
+    <div class="results-section" *ngIf="results.length > 0">
+      <h2> ПРОИЗВОДИТЕЛЬНОСТЬ</h2>
+      
+      <!-- Карточки с рейтингом -->
+      <div class="ranking-cards">
+        <div class="rank-card" *ngFor="let r of results; let i = index" [style.border-color]="r.color">
+          <span class="rank-emoji">{{ i === 0 ? '' : i === 1 ? '' : '' }}</span>
+          <strong>{{ r.name }}</strong>
+          <span class="rank-time">{{ r.time.toFixed(2) }} мс</span>
+          <span class="rank-speed">{{ r.opsPerSec.toFixed(0) }} оп/сек</span>
+        </div>
+      </div>
+
+      <!-- Таблица -->
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Алгоритм</th>
+            <th>Время (мс)</th>
+            <th>Скорость (оп/сек)</th>
+            <th>Время на 1 оп. (мс)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of results; let i = index" [class.best]="i === 0">
+            <td><strong>{{ r.name }}</strong></td>
+            <td>{{ r.time.toFixed(2) }}</td>
+            <td>{{ r.opsPerSec.toFixed(0) }}</td>
+            <td>{{ (r.time / 1000).toFixed(4) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- График сравнения -->
+      <div class="chart-section">
+        <h3> СРАВНЕНИЕ СКОРОСТИ</h3>
+        <div class="bar-chart">
+          <div class="bar-row" *ngFor="let r of results; let i = index">
+            <span class="bar-label">{{ r.name }}</span>
+            <div class="bar-track">
+              <div class="bar-fill" [style.width]="(r.opsPerSec / maxOpsPerSec * 100) + '%'" [style.background]="r.color"></div>
+            </div>
+            <span class="bar-value">{{ r.opsPerSec.toFixed(0) }} оп/сек</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- График: Размер ключа vs Скорость -->
+      <div class="chart-section">
+        <h3> РАЗМЕР КЛЮЧА vs СКОРОСТЬ</h3>
+        <p class="chart-desc">Чем длиннее ключ — тем медленнее шифрование, но тем выше криптостойкость</p>
+        <div class="key-speed-chart">
+          <svg viewBox="0 0 500 250" width="100%" height="250">
+            <line x1="80" y1="30" x2="80" y2="200" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="80" y1="200" x2="460" y2="200" stroke="#cbd5e1" stroke-width="1"/>
+            <text x="20" y="35" fill="#64748b" font-size="10">⬆ Быстро</text>
+            <text x="20" y="200" fill="#64748b" font-size="10">⬇ Медленно</text>
+            <text x="130" y="220" text-anchor="middle" fill="#64748b" font-size="10">56 бит</text>
+            <text x="240" y="220" text-anchor="middle" fill="#64748b" font-size="10">128 бит</text>
+            <text x="340" y="220" text-anchor="middle" fill="#64748b" font-size="10">256 бит</text>
+            <rect x="100" y="60" width="60" height="140" fill="#f59e0b" rx="6" opacity="0.9"/>
+            <text x="130" y="53" text-anchor="middle" fill="#f59e0b" font-size="12" font-weight="700">DES</text>
+            <text x="130" y="130" text-anchor="middle" fill="white" font-size="11" font-weight="600">{{ getDesOps() }}</text>
+            <rect x="210" y="100" width="60" height="100" fill="#3b82f6" rx="6" opacity="0.9"/>
+            <text x="240" y="93" text-anchor="middle" fill="#3b82f6" font-size="12" font-weight="700">AES</text>
+            <text x="240" y="150" text-anchor="middle" fill="white" font-size="11" font-weight="600">{{ getAesOps() }}</text>
+            <rect x="310" y="140" width="60" height="60" fill="#10b981" rx="6" opacity="0.9"/>
+            <text x="340" y="133" text-anchor="middle" fill="#10b981" font-size="12" font-weight="700">Кузнечик</text>
+            <text x="340" y="172" text-anchor="middle" fill="white" font-size="11" font-weight="600">{{ getKuzOps() }}</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Лавинный эффект -->
+      <div class="specs-section">
+        <h2> ЛАВИННЫЙ ЭФФЕКТ</h2>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Алгоритм</th>
+              <th>Изменено бит</th>
+              <th>Процент</th>
+              <th>Оценка</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of avalancheResults">
+              <td><strong>{{ r.name }}</strong></td>
+              <td>{{ r.changed }}/{{ r.total }}</td>
+              <td>{{ r.percent.toFixed(1) }}%</td>
+              <td [class.good]="r.isGood" [class.warn]="!r.isGood">
+                {{ r.isGood ? ' Отлично' : ' Отклонение' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- График лавинного эффекта -->
+      <div class="chart-section">
+        <h3> СРАВНЕНИЕ ЛАВИННОГО ЭФФЕКТА</h3>
+        <div class="bar-chart">
+          <div class="bar-row" *ngFor="let r of avalancheResults">
+            <span class="bar-label">{{ r.name }}</span>
+            <div class="bar-track">
+              <div class="bar-fill" [style.width]="r.percent + '%'" [style.background]="getAvalancheColor(r.percent)"></div>
+            </div>
+            <span class="bar-value">{{ r.percent.toFixed(1) }}%</span>
+          </div>
+        </div>
+        <p style="text-align:center; color:#64748b; font-size:0.8rem; margin-top:8px;">Идеал — 50%</p>
+      </div>
+
+      <!-- Сводная таблица -->
+      <div class="specs-section">
+        <h2> СВОДНАЯ ТАБЛИЦА</h2>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Характеристика</th>
+              <th>AES</th>
+              <th>DES</th>
+              <th>Кузнечик</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Скорость (оп/сек)</strong></td>
+              <td>{{ getAesOps() }}</td>
+              <td>{{ getDesOps() }}</td>
+              <td>{{ getKuzOps() }}</td>
+            </tr>
+            <tr>
+              <td><strong>Лавинный эффект</strong></td>
+              <td>{{ getAvalanchePercent('AES') }}%</td>
+              <td>{{ getAvalanchePercent('DES') }}%</td>
+              <td>{{ getAvalanchePercent('Кузнечик') }}%</td>
+            </tr>
+            <tr>
+              <td><strong>Размер блока</strong></td>
+              <td>128 бит</td>
+              <td>64 бит</td>
+              <td>128 бит</td>
+            </tr>
+            <tr>
+              <td><strong>Размер ключа</strong></td>
+              <td>128-256 бит</td>
+              <td>56 бит</td>
+              <td>256 бит</td>
+            </tr>
+            <tr>
+              <td><strong>Раундов</strong></td>
+              <td>10-14</td>
+              <td>16</td>
+              <td>10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Таблица характеристик -->
+      <div class="specs-section">
+        <h2> ХАРАКТЕРИСТИКИ АЛГОРИТМОВ</h2>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Алгоритм</th>
+              <th>Размер блока</th>
+              <th>Длина ключа</th>
+              <th>Раундов</th>
+              <th>Структура</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>AES</strong></td><td>128 бит</td><td>128-256 бит</td><td>10-14</td><td>SP-сеть</td></tr>
+            <tr><td><strong>DES</strong></td><td>64 бит</td><td>56 бит</td><td>16</td><td>Сеть Фейстеля</td></tr>
+            <tr><td><strong>Кузнечик</strong></td><td>128 бит</td><td>256 бит</td><td>10</td><td>SP-сеть</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ЗАМЕР ПРОИЗВОДИТЕЛЬНОСТИ (как в AES-панели) -->
+      <div class="benchmark-section">
+        <h3> ЗАМЕР ПРОИЗВОДИТЕЛЬНОСТИ</h3>
+        
+        <div class="benchmark-controls">
+          <div class="input-group">
+            <label>Количество итераций:</label>
+            <input [(ngModel)]="benchIterations" type="number" min="100" max="10000" step="100" class="bench-input">
+          </div>
+          <button (click)="runBenchmark()" class="btn btn-primary"> Запустить замер</button>
+        </div>
+
+        <div class="benchmark-results" *ngIf="benchResults.length > 0">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Алгоритм</th>
+                <th>Время (мс)</th>
+                <th>Скорость (оп/сек)</th>
+                <th>Время на 1 оп. (мс)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of benchResults">
+                <td><strong>{{ r.name }}</strong></td>
+                <td>{{ r.time.toFixed(2) }}</td>
+                <td>{{ r.opsPerSec.toFixed(0) }}</td>
+                <td>{{ (r.time / benchIterations).toFixed(4) }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="bar-chart">
+            <div class="bar-row" *ngFor="let r of benchResults">
+              <span class="bar-label">{{ r.name }}</span>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width]="(r.opsPerSec / maxBenchOps * 100) + '%'" [style.background]="r.color"></div>
+              </div>
+              <span class="bar-value">{{ r.opsPerSec.toFixed(0) }} оп/сек</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ВЫВОД -->
+      <div class="conclusion-section">
+        <h3> ВЫВОД</h3>
+        <div class="conclusion-content">
+          <p><strong>{{ getBestName() }}</strong> — самый быстрый алгоритм ({{ getBestOps() }} оп/сек). 
+          Рекомендуется для большинства задач, где важна скорость обработки данных.</p>
+          
+          <p><strong>Кузнечик</strong> — самый надёжный (ключ 256 бит). 
+          Рекомендуется для государственных систем и защиты секретной информации.</p>
+          
+          <p><strong>DES</strong> — устаревший алгоритм (ключ 56 бит). 
+          Представляет только исторический интерес и не рекомендуется для реальной защиты данных.</p>
+          
+          <div class="conclusion-highlight">
+            <strong> Ключевой вывод:</strong> С увеличением длины ключа скорость шифрования падает, 
+            но криптостойкость растёт. AES-128 предлагает оптимальный баланс между скоростью и безопасностью.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ДЕТАЛИ АЛГОРИТМА -->
+    <div class="detail-section" *ngIf="activeTab !== 'all'">
+      <div *ngIf="activeTab === 'aes'">
+        <h2> AES — ДЕТАЛИ</h2>
+        <app-aes-panel></app-aes-panel>
+      </div>
+      <div *ngIf="activeTab === 'des'">
+        <h2> DES — ДЕТАЛИ</h2>
+        <app-des-panel></app-des-panel>
+      </div>
+      <div *ngIf="activeTab === 'kuznechik'">
+        <h2> КУЗНЕЧИК — ДЕТАЛИ</h2>
+        <app-kuznechik-panel></app-kuznechik-panel>
+      </div>
+    </div>
+
+    <!-- КНОПКА НАЗАД -->
+    <div class="back-section">
+      <a routerLink="/" class="back-button">← НАЗАД НА ГЛАВНУЮ</a>
+    </div>
+
+  </div>
+</div>

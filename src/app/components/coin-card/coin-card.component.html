@@ -1,0 +1,7 @@
+<div class="coin-card">
+  <h3>{{ name }} ({{ symbol }})</h3>
+  <p>Price: ${{ price }}</p>
+  <p [style.color]="change24h >= 0 ? 'green' : 'red'">
+    24h Change: {{ change24h }}%
+  </p>
+</div>

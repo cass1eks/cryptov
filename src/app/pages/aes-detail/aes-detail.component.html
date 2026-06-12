@@ -1,0 +1,418 @@
+<div class="aes-page-wrapper">
+    <div class="aes-container">
+        
+        <!-- НАВИГАЦИЯ -->
+        <nav class="top-nav">
+            <a routerLink="/">ГЛАВНАЯ</a>
+            <a routerLink="/algorithms/aes" class="active">АЛГОРИТМЫ</a>
+            <a routerLink="/experiments">ЭКСПЕРИМЕНТЫ</a>
+            <a href="javascript:void(0)" (click)="openInteractiveModal()">ИНТЕРАКТИВ</a>
+        </nav>
+
+        <!-- ЗАГОЛОВОК -->
+        <header class="page-header">
+            <div class="header-badge">FIPS 197</div>
+            <h1 class="page-title">ДЕТАЛИЗАЦИЯ: <span>AES</span></h1>
+            <p class="page-subtitle">Advanced Encryption Standard (Rijndael)</p>
+            <div class="header-line"></div>
+        </header>
+
+        <!-- ЛОГОТИП -->
+        <div class="hero-section">
+            <div class="aes-shield">
+                <div class="shield-content"><span class="shield-text">AES</span></div>
+            </div>
+        </div>
+
+        <!-- КАРТОЧКИ: ХАРАКТЕРИСТИКИ + СТРУКТУРА + S-BOX -->
+        <div class="glass-panel-container">
+            <div class="glass-grid">
+                
+                <div class="glass-card">
+                    <div class="glass-card-edge"></div>
+                    <h3 class="glass-title">ХАРАКТЕРИСТИКИ AES</h3>
+                    <div class="glass-content">
+                        <div class="stat-row"><span>Размер блока:</span> <span class="highlight">128 бит</span></div>
+                        <div class="stat-row"><span>Длина ключа:</span> <span class="highlight">128 / 192 / 256 бит</span></div>
+                        <div class="stat-row"><span>Число раундов:</span> <span class="highlight">10 / 12 / 14</span></div>
+                        <div class="stat-row"><span>Тип сети:</span> <span class="highlight">SP-сеть</span></div>
+                        <div class="stat-row"><span>Размер S-Box:</span> <span class="highlight">256 значений (16×16)</span></div>
+                    </div>
+                </div>
+
+                <div class="glass-card active-card">
+                    <div class="glass-card-edge"></div>
+                    <h3 class="glass-title">СТРУКТУРА AES</h3>
+                    <div class="glass-content flow">
+                        <div class="node">AddRoundKey — начальный XOR с ключом</div>
+                        <div class="connector">↓</div>
+                        <div class="node pulse">9/11/13 раундов: SubBytes → ShiftRows → MixColumns → AddRoundKey</div>
+                        <div class="connector">↓</div>
+                        <div class="node">Финальный раунд: SubBytes → ShiftRows → AddRoundKey</div>
+                        <div class="connector">↓</div>
+                        <div class="node">Выход (128 бит)</div>
+                    </div>
+                </div>
+
+                <div class="glass-card interactive" (click)="showSBoxModal = true">
+                    <div class="glass-card-edge"></div>
+                    <h3 class="glass-title">S-BOX (RIJNDAEL)</h3>
+                    <div class="glass-content">
+                        <div class="sbox-mini-grid">
+                            <div class="sbox-mini-row"><span>00</span><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>0A</span><span>0B</span><span>0C</span><span>0D</span><span>0E</span><span>0F</span></div>
+                            <div class="sbox-mini-row"><span>63</span><span>7C</span><span>77</span><span>7B</span><span>F2</span><span>6B</span><span>6F</span><span>C5</span><span>30</span><span>01</span><span>67</span><span>2B</span><span>FE</span><span>D7</span><span>AB</span><span>76</span></div>
+                            <div class="sbox-mini-row"><span>CA</span><span>82</span><span>C9</span><span>7D</span><span>FA</span><span>59</span><span>47</span><span>F0</span><span>AD</span><span>D4</span><span>A2</span><span>AF</span><span>9C</span><span>A4</span><span>72</span><span>C0</span></div>
+                        </div>
+                        <p class="glass-hint">Нажми, чтобы развернуть ↕</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ФОРМУЛЫ -->
+        <div class="formulas-section">
+            <h3>ОСНОВНЫЕ ФОРМУЛЫ AES</h3>
+            <p class="section-desc">Нажмите на формулу, чтобы увидеть пояснение</p>
+            <div class="formulas-grid">
+                <div class="formula-card" (click)="openFormula = (openFormula === 'spnet' ? '' : 'spnet')">
+                    <div class="formula-title" [class.active]="openFormula === 'spnet'">SP-сеть AES<span class="formula-hint">нажми для пояснения</span></div>
+                    <div class="formula-content"><code>Round 1..Nr-1: SubBytes → ShiftRows → MixColumns → AddRoundKey</code><code>Final Round: SubBytes → ShiftRows → AddRoundKey</code></div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'spnet'">
+                        <div class="explanation-item"><strong>SubBytes</strong> — нелинейная замена каждого байта через S-Box (16×16)</div>
+                        <div class="explanation-item"><strong>ShiftRows</strong> — циклический сдвиг строк матрицы состояния</div>
+                        <div class="explanation-item"><strong>MixColumns</strong> — умножение столбцов на матрицу в поле GF(2⁸)</div>
+                        <div class="explanation-item"><strong>AddRoundKey</strong> — XOR состояния с раундовым ключом</div>
+                        <div class="explanation-note">AES использует SP-сеть (Substitution-Permutation). В отличие от сети Фейстеля, обрабатывается весь блок целиком.</div>
+                    </div>
+                </div>
+                <div class="formula-card" (click)="openFormula = (openFormula === 'subbytes' ? '' : 'subbytes')">
+                    <div class="formula-title" [class.active]="openFormula === 'subbytes'">SubBytes (S-Box)<span class="formula-hint">нажми для пояснения</span></div>
+                    <div class="formula-content"><code>s'(i,j) = S[s(i,j)]</code><code>S[x] = Affine(x⁻¹) в GF(2⁸)</code></div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'subbytes'">
+                        <div class="explanation-item"><strong>s(i,j)</strong> — байт в позиции (строка i, столбец j)</div>
+                        <div class="explanation-item"><strong>S[x]</strong> — таблица замены Rijndael (256 значений)</div>
+                        <div class="explanation-item"><strong>x⁻¹</strong> — мультипликативное обратное в поле GF(2⁸)</div>
+                        <div class="explanation-note">SubBytes — единственное нелинейное преобразование в AES, обеспечивающее стойкость к криптоанализу.</div>
+                    </div>
+                </div>
+                <div class="formula-card" (click)="openFormula = (openFormula === 'mixcolumns' ? '' : 'mixcolumns')">
+                    <div class="formula-title" [class.active]="openFormula === 'mixcolumns'">MixColumns<span class="formula-hint">нажми для пояснения</span></div>
+                    <div class="formula-content"><code>[s'] = M × [s]</code><code>M = [[02,03,01,01],[01,02,03,01],[01,01,02,03],[03,01,01,02]]</code></div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'mixcolumns'">
+                        <div class="explanation-item"><strong>M</strong> — фиксированная матрица 4×4 над полем GF(2⁸)</div>
+                        <div class="explanation-item"><strong>×</strong> — матричное умножение в GF(2⁸)</div>
+                        <div class="explanation-note"> MixColumns перемешивает байты в каждом столбце. Не выполняется в финальном раунде.</div>
+                    </div>
+                </div>
+                <div class="formula-card" (click)="openFormula = (openFormula === 'ctr' ? '' : 'ctr')">
+                    <div class="formula-title" [class.active]="openFormula === 'ctr'">Режим CTR<span class="formula-hint">нажми для пояснения</span></div>
+                    <div class="formula-content"><code>Keystream = AES(Nonce || Counter)</code><code>C(i) = M(i) ⊕ Keystream</code></div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'ctr'">
+                        <div class="explanation-item"><strong>Nonce</strong> — уникальное число (Number used ONCE)</div>
+                        <div class="explanation-item"><strong>Counter</strong> — счётчик, увеличивающийся для каждого блока</div>
+                        <div class="explanation-note">CTR — потоковый режим. Шифрование и расшифрование выполняются одинаково. Не требует padding.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- КЛЮЧЕВЫЕ ПОНЯТИЯ -->
+        <div class="concepts-section">
+            <h3>КЛЮЧЕВЫЕ ПОНЯТИЯ</h3>
+            <div class="concepts-grid">
+                <div class="concept-card">
+                    <div class="concept-title">SP-сеть</div>
+                    <div class="concept-desc">Substitution-Permutation network — архитектура, в которой раунд состоит из слоя подстановки (S) и слоя перестановки (P).</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">S-Box</div>
+                    <div class="concept-desc">Substitution Box — таблица замены из 256 значений. Единственное нелинейное преобразование в AES, критичное для криптостойкости.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">GF(2⁸)</div>
+                    <div class="concept-desc">Поле Галуа из 256 элементов. Все операции MixColumns выполняются в этом поле по модулю полинома x⁸+x⁴+x³+x+1.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">Раундовый ключ</div>
+                    <div class="concept-desc">Ключ, уникальный для каждого раунда. Генерируется из исходного ключа алгоритмом Key Expansion с использованием RCON-констант.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- НОВЫЙ БЛОК: ПОДРОБНОЕ ОПИСАНИЕ AES (ДИНАМИЧЕСКИЙ) -->
+        <div class="aes-detailed-description">
+
+            <!-- === 1. SubBytes === -->
+            <div class="detail-card">
+                <div class="detail-card-bg-number">01</div>
+                <div class="detail-card-content">
+                    <h2 class="detail-title">{{ content['title_1'] }}</h2>
+                    <p class="detail-text">{{ content['text_1_1'] }}</p>
+                    <p class="detail-text">{{ content['text_1_2'] }}</p>
+                    <p class="detail-text"><strong>Почему это важно?</strong> {{ content['text_1_3'] }}</p>
+                    <p class="detail-text"><strong>Поле Галуа GF(2⁸)</strong> — {{ content['text_1_4'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 2. ShiftRows === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">02</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_2'] }}</h2>
+                    <p class="detail-text">{{ content['text_2_1'] }}</p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_2']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text">{{ content['text_2_2'] }}</p>
+                    <div class="shiftrows-container">
+                        <svg width="500" height="220" viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
+                            <rect x="20" y="10" width="200" height="200" fill="#f8fafc" stroke="#3b82f6" stroke-width="2" rx="8"/>
+                            <text x="120" y="35" text-anchor="middle" font-size="12" fill="#64748b" font-weight="bold">ДО</text>
+                            <!-- Левая матрица -->
+                            <rect x="35" y="50" width="35" height="30" fill="#eff6ff" stroke="#94a3b8" rx="4"/>
+                            <rect x="75" y="50" width="35" height="30" fill="#eff6ff" stroke="#94a3b8" rx="4"/>
+                            <rect x="115" y="50" width="35" height="30" fill="#eff6ff" stroke="#94a3b8" rx="4"/>
+                            <rect x="155" y="50" width="35" height="30" fill="#eff6ff" stroke="#94a3b8" rx="4"/>
+                            <rect x="35" y="85" width="35" height="30" fill="#dcfce7" stroke="#94a3b8" rx="4"/>
+                            <rect x="75" y="85" width="35" height="30" fill="#dcfce7" stroke="#94a3b8" rx="4"/>
+                            <rect x="115" y="85" width="35" height="30" fill="#dcfce7" stroke="#94a3b8" rx="4"/>
+                            <rect x="155" y="85" width="35" height="30" fill="#dcfce7" stroke="#94a3b8" rx="4"/>
+                            <rect x="35" y="120" width="35" height="30" fill="#fef3c7" stroke="#94a3b8" rx="4"/>
+                            <rect x="75" y="120" width="35" height="30" fill="#fef3c7" stroke="#94a3b8" rx="4"/>
+                            <rect x="115" y="120" width="35" height="30" fill="#fef3c7" stroke="#94a3b8" rx="4"/>
+                            <rect x="155" y="120" width="35" height="30" fill="#fef3c7" stroke="#94a3b8" rx="4"/>
+                            <rect x="35" y="155" width="35" height="30" fill="#fce7f3" stroke="#94a3b8" rx="4"/>
+                            <rect x="75" y="155" width="35" height="30" fill="#fce7f3" stroke="#94a3b8" rx="4"/>
+                            <rect x="115" y="155" width="35" height="30" fill="#fce7f3" stroke="#94a3b8" rx="4"/>
+                            <rect x="155" y="155" width="35" height="30" fill="#fce7f3" stroke="#94a3b8" rx="4"/>
+                            <!-- Тексты левой матрицы -->
+                            <text x="52" y="70" text-anchor="middle" font-size="11" fill="#1e293b">s₀₀</text>
+                            <text x="92" y="70" text-anchor="middle" font-size="11" fill="#1e293b">s₀₁</text>
+                            <text x="132" y="70" text-anchor="middle" font-size="11" fill="#1e293b">s₀₂</text>
+                            <text x="172" y="70" text-anchor="middle" font-size="11" fill="#1e293b">s₀₃</text>
+                            <text x="52" y="105" text-anchor="middle" font-size="11" fill="#1e293b">s₁₀</text>
+                            <text x="92" y="105" text-anchor="middle" font-size="11" fill="#1e293b">s₁₁</text>
+                            <text x="132" y="105" text-anchor="middle" font-size="11" fill="#1e293b">s₁₂</text>
+                            <text x="172" y="105" text-anchor="middle" font-size="11" fill="#1e293b">s₁₃</text>
+                            <text x="52" y="140" text-anchor="middle" font-size="11" fill="#1e293b">s₂₀</text>
+                            <text x="92" y="140" text-anchor="middle" font-size="11" fill="#1e293b">s₂₁</text>
+                            <text x="132" y="140" text-anchor="middle" font-size="11" fill="#1e293b">s₂₂</text>
+                            <text x="172" y="140" text-anchor="middle" font-size="11" fill="#1e293b">s₂₃</text>
+                            <text x="52" y="175" text-anchor="middle" font-size="11" fill="#1e293b">s₃₀</text>
+                            <text x="92" y="175" text-anchor="middle" font-size="11" fill="#1e293b">s₃₁</text>
+                            <text x="132" y="175" text-anchor="middle" font-size="11" fill="#1e293b">s₃₂</text>
+                            <text x="172" y="175" text-anchor="middle" font-size="11" fill="#1e293b">s₃₃</text>
+                            <line x1="240" y1="110" x2="280" y2="110" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrow)"/>
+                            <defs>
+                                <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6"/>
+                                </marker>
+                            </defs>
+                            <!-- Правая матрица -->
+                            <rect x="300" y="10" width="200" height="200" fill="#f8fafc" stroke="#3b82f6" stroke-width="2" rx="8"/>
+                            <text x="400" y="35" text-anchor="middle" font-size="12" fill="#64748b" font-weight="bold">ПОСЛЕ</text>
+                            <rect x="315" y="50" width="35" height="30" fill="#eff6ff" stroke="#94a3b8" rx="4"/>
+                            <rect x="355" y="50" width="35" height="30" fill="#eff6ff" stroke="#94a3b8" rx="4"/>
+                            <rect x="395" y="50" width="35" height="30" fill="#eff6ff" stroke="#94a3b8" rx="4"/>
+                            <rect x="435" y="50" width="35" height="30" fill="#eff6ff" stroke="#94a3b8" rx="4"/>
+                            <text x="332" y="70" text-anchor="middle" font-size="11" fill="#1e293b">s₀₀</text>
+                            <text x="372" y="70" text-anchor="middle" font-size="11" fill="#1e293b">s₀₁</text>
+                            <text x="412" y="70" text-anchor="middle" font-size="11" fill="#1e293b">s₀₂</text>
+                            <text x="452" y="70" text-anchor="middle" font-size="11" fill="#1e293b">s₀₃</text>
+                            <rect x="315" y="85" width="35" height="30" fill="#dcfce7" stroke="#94a3b8" rx="4"/>
+                            <rect x="355" y="85" width="35" height="30" fill="#dcfce7" stroke="#94a3b8" rx="4"/>
+                            <rect x="395" y="85" width="35" height="30" fill="#dcfce7" stroke="#94a3b8" rx="4"/>
+                            <rect x="435" y="85" width="35" height="30" fill="#dcfce7" stroke="#94a3b8" rx="4"/>
+                            <text x="332" y="105" text-anchor="middle" font-size="11" fill="#1e293b">s₁₁</text>
+                            <text x="372" y="105" text-anchor="middle" font-size="11" fill="#1e293b">s₁₂</text>
+                            <text x="412" y="105" text-anchor="middle" font-size="11" fill="#1e293b">s₁₃</text>
+                            <text x="452" y="105" text-anchor="middle" font-size="11" fill="#1e293b">s₁₀</text>
+                            <rect x="315" y="120" width="35" height="30" fill="#fef3c7" stroke="#94a3b8" rx="4"/>
+                            <rect x="355" y="120" width="35" height="30" fill="#fef3c7" stroke="#94a3b8" rx="4"/>
+                            <rect x="395" y="120" width="35" height="30" fill="#fef3c7" stroke="#94a3b8" rx="4"/>
+                            <rect x="435" y="120" width="35" height="30" fill="#fef3c7" stroke="#94a3b8" rx="4"/>
+                            <text x="332" y="140" text-anchor="middle" font-size="11" fill="#1e293b">s₂₂</text>
+                            <text x="372" y="140" text-anchor="middle" font-size="11" fill="#1e293b">s₂₃</text>
+                            <text x="412" y="140" text-anchor="middle" font-size="11" fill="#1e293b">s₂₀</text>
+                            <text x="452" y="140" text-anchor="middle" font-size="11" fill="#1e293b">s₂₁</text>
+                            <rect x="315" y="155" width="35" height="30" fill="#fce7f3" stroke="#94a3b8" rx="4"/>
+                            <rect x="355" y="155" width="35" height="30" fill="#fce7f3" stroke="#94a3b8" rx="4"/>
+                            <rect x="395" y="155" width="35" height="30" fill="#fce7f3" stroke="#94a3b8" rx="4"/>
+                            <rect x="435" y="155" width="35" height="30" fill="#fce7f3" stroke="#94a3b8" rx="4"/>
+                            <text x="332" y="175" text-anchor="middle" font-size="11" fill="#1e293b">s₃₃</text>
+                            <text x="372" y="175" text-anchor="middle" font-size="11" fill="#1e293b">s₃₀</text>
+                            <text x="412" y="175" text-anchor="middle" font-size="11" fill="#1e293b">s₃₁</text>
+                            <text x="452" y="175" text-anchor="middle" font-size="11" fill="#1e293b">s₃₂</text>
+                        </svg>
+                       
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 3. MixColumns === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; left: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">03</div>
+                <div style="position: relative; z-index: 1; padding-left: 150px;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_3'] }}</h2>
+                    <p class="detail-text">{{ content['text_3_1'] }}</p>
+                    <div style="margin: 25px 0;">
+                        <img src="/mix.png" alt="Схема умножения столбца на матрицу в GF(2⁸)" style="max-width: 700px; width: 90%; height: auto; display: block; margin-left: 80px; border-radius: 0; box-shadow: none;">
+                        <p class="figure-caption" style="margin-top: 8px;">Рис. — Схема умножения столбца на матрицу в GF(2⁸)</p>
+                    </div>
+                    <p class="detail-text"><strong>Упрощённо:</strong> <code class="inline-code">{{ content['text_3_2'] }}</code></p>
+                    <p class="detail-text">{{ content['text_3_3'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 4. AddRoundKey === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">04</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_4'] }}</h2>
+                    <p class="detail-text">{{ content['text_4_1'] }}</p>
+                    <p class="detail-text">{{ content['text_4_2'] }}</p>
+                    <p class="detail-text"><strong>XOR</strong> — {{ content['text_4_3'] }}</p>
+                    <div style="text-align: center; margin: 25px 0;">
+                        <img src="/add (1).png" alt="Схема XOR состояния с раундовым ключом" style="max-width: 700px; width: 90%; height: auto; display: block; margin: 0 auto; border-radius: 0; box-shadow: none;">
+                        <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Рис. — Схема XOR состояния с раундовым ключом</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 5. Key Expansion === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; left: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">05</div>
+                <div style="position: relative; z-index: 1; padding-left: 150px;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_5'] }}</h2>
+                    <p class="detail-text">{{ content['text_5_1'] }}</p>
+                    <p class="detail-text"><strong>Он работает так:</strong></p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['text_5_2']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text"><strong>Зачем нужен Rcon?</strong> {{ content['text_5_3'] }}</p>
+                    <p class="detail-text"><strong>Пример:</strong> {{ content['text_5_4'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 6. Режимы работы === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">06</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_6'] }}</h2>
+                    <p class="detail-text">{{ content['text_6_1'] }}</p>
+                    <div style="text-align: center; margin: 25px 0;">
+                        <img src="/ecb (1).png" alt="Схемы режимов ECB, CBC, GCM" style="max-width: 900px; width: 95%; height: auto; display: block; margin: 0 auto; border-radius: 0; box-shadow: none;">
+                        <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Рис. — Схемы режимов ECB (опасный), CBC (цепочка), GCM (шифрование + аутентификация)</p>
+                    </div>
+                    <h3 class="detail-subtitle">{{ content['subtitle_6_1'] }}</h3>
+                    <p class="detail-text">{{ content['text_6_2'] }}</p>
+                    <p class="detail-text"><strong>Пример уязвимости:</strong> {{ content['text_6_3'] }}</p>
+                    <p class="detail-text warning-text">{{ content['warning_6'] }}</p>
+                    <h3 class="detail-subtitle">{{ content['subtitle_6_2'] }}</h3>
+                    <p class="detail-text">{{ content['text_6_4'] }}</p>
+                    <p class="detail-text"><strong>Требования к IV:</strong> {{ content['text_6_5'] }}</p>
+                    <p class="detail-text">{{ content['text_6_6'] }}</p>
+                    <h3 class="detail-subtitle">{{ content['subtitle_6_3'] }}</h3>
+                    <p class="detail-text">{{ content['text_6_7'] }}</p>
+                    <p class="detail-text"><strong>Преимущества:</strong> {{ content['text_6_8'] }}</p>
+                    <p class="detail-text">{{ content['text_6_9'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 7. Безопасность === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; left: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">07</div>
+                <div style="position: relative; z-index: 1; padding-left: 150px;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_7'] }}</h2>
+                    <p class="detail-text">{{ content['text_7_1'] }}</p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_7']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text">{{ content['text_7_2'] }}</p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_7_2']?.split(';')">{{ item }}</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- === 8. Где используется === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">08</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_8'] }}</h2>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_8']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text">{{ content['text_8_1'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 9. AES-NI === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; left: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">09</div>
+                <div style="position: relative; z-index: 1; padding-left: 160px;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_9'] }}</h2>
+                    <p class="detail-text">{{ content['text_9_1'] }}</p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_9']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text">{{ content['text_9_2'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 10. Практические советы === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">10</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_10'] }}</h2>
+                    <ol class="detail-list numeric">
+                        <li *ngFor="let item of content['list_10']?.split(';')">{{ item }}</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- === 11. Коротко об AES (резюме) === -->
+            <div class="detail-card summary-card">
+                <div class="detail-card-bg-number" style="left: auto; right: 15px;">11</div>
+                <div class="detail-card-content" style="padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_11'] }}</h2>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_11']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text highlight-text">{{ content['text_11_1'] }}</p>
+                    <p class="detail-text">{{ content['text_11_2'] }}</p>
+                    <p class="detail-text"><strong>{{ content['text_11_3'] }}</strong></p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- НАЗАД И СРАВНЕНИЕ В ОДНОЙ СТРОКЕ -->
+        <div class="bottom-actions">
+            <div class="back-section">
+                <a routerLink="/" class="back-button">← НАЗАД К ОБЗОРУ АЛГОРИТМОВ</a>
+            </div>
+            
+            <div class="related-section">
+                <span class="related-title">СРАВНИТЬ С ДРУГИМИ АЛГОРИТМАМИ</span>
+                <div class="related-buttons">
+                    <a routerLink="/algorithms/des" class="related-btn">DES →</a>
+                    <a routerLink="/algorithms/kuznechik" class="related-btn">Кузнечик →</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО С ИНТЕРАКТИВНОЙ ВИЗУАЛИЗАЦИЕЙ AES -->
+<div class="modal-overlay" *ngIf="showInteractiveModal" (click)="closeInteractiveModal()">
+    <div class="modal-window interactive-modal" (click)="$event.stopPropagation()">
+        <span class="close-icon" (click)="closeInteractiveModal()">&times;</span>
+        <h2 class="modal-title">ИНТЕРАКТИВНАЯ ВИЗУАЛИЗАЦИЯ AES</h2>
+        <div class="interactive-modal-content">
+            <app-aes-panel></app-aes-panel>
+        </div>
+    </div>
+</div>

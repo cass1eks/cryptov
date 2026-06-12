@@ -1,0 +1,374 @@
+<div class="kuznechik-panel">
+  
+  <!-- Заголовок -->
+  <div class="panel-header">
+    <span class="panel-gost">ГОСТ 34.12-2015</span>
+    <h2 class="panel-title">КУЗНЕЧИК</h2>
+    <div class="panel-line"></div>
+  </div>
+
+  <!-- Характеристики -->
+  <div class="kuz-specs-row">
+    <div class="kuz-spec-item">
+      <span class="kuz-spec-label">Размер блока</span>
+      <span class="kuz-spec-value">128 бит</span>
+    </div>
+    <div class="kuz-spec-item">
+      <span class="kuz-spec-label">Размер ключа</span>
+      <span class="kuz-spec-value">256 бит</span>
+    </div>
+    <div class="kuz-spec-item">
+      <span class="kuz-spec-label">Раундов</span>
+      <span class="kuz-spec-value">10</span>
+    </div>
+    <div class="kuz-spec-item">
+      <span class="kuz-spec-label">Структура</span>
+      <span class="kuz-spec-value">SP-сеть</span>
+    </div>
+  </div>
+
+  <!-- Ввод -->
+  <div class="input-section">
+    <div class="input-row">
+      <div class="input-group">
+        <label>Текст</label>
+        <input [(ngModel)]="text" placeholder="hello">
+      </div>
+
+      <div class="input-group">
+        <label>Ключ (hex, 64 символа)</label>
+        <input [(ngModel)]="key" placeholder="8899AABBCCDDEEFF0011223344556677FEDCBA98765432100123456789ABCDEF">
+      </div>
+    </div>
+
+    <!-- Режимы -->
+    <div class="mode-section">
+      <span class="mode-section-label">Режим</span>
+      <div class="mode-cards">
+        <div class="mode-card" [class.active]="mode === 'ECB'" (click)="mode = 'ECB'; onModeChange()">
+          <span class="mode-icon"></span>
+          <span class="mode-name">ECB</span>
+          <span class="mode-hint">каждый блок отдельно</span>
+        </div>
+        <div class="mode-card" [class.active]="mode === 'CBC'" (click)="mode = 'CBC'; onModeChange()">
+          <span class="mode-icon"></span>
+          <span class="mode-name">CBC</span>
+          <span class="mode-hint">цепочка блоков</span>
+        </div>
+        <div class="mode-card" [class.active]="mode === 'CTR'" (click)="mode = 'CTR'; onModeChange()">
+          <span class="mode-icon"></span>
+          <span class="mode-name">CTR</span>
+          <span class="mode-hint">потоковое шифрование</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- IV -->
+    <div class="iv-section" *ngIf="showIV">
+      <div class="iv-label-row">
+        <span class="iv-label">{{ mode === 'CTR' ? 'Nonce' : 'IV' }}</span>
+        <span class="iv-badge">{{ mode === 'CTR' ? '8 байт' : 'вектор' }}</span>
+      </div>
+      <input [(ngModel)]="iv" [placeholder]="mode === 'CTR' ? 'Введите Nonce' : 'Введите IV'" class="iv-input" maxlength="16">
+      <p class="iv-hint">{{ mode === 'CBC' ? 'IV добавляет случайность в первый блок' : 'Nonce + счётчик = keystream' }}</p>
+    </div>
+
+    <!-- Кнопки -->
+    <div class="button-group">
+      <button (click)="encrypt()" class="btn btn-primary">Зашифровать</button>
+      <button (click)="decrypt()" class="btn btn-outline">Расшифровать</button>
+      <button (click)="toggleRounds()" class="btn btn-ghost">{{ showRounds ? 'Скрыть раунды' : 'Показать раунды' }}</button>
+    </div>
+  </div>
+
+  <!-- Результаты -->
+  <div class="result-section" *ngIf="resultBase64">
+    <h3 class="result-title">Результат шифрования (Base64)</h3>
+    <div class="result-box">{{ resultBase64 }}</div>
+  </div>
+
+  <div class="result-section" *ngIf="result">
+    <h3 class="result-title">Результат расшифрования</h3>
+    <div class="result-box success">{{ result }}</div>
+  </div>
+
+  <!-- ЛАВИННЫЙ ЭФФЕКТ С ДИНАМИЧЕСКОЙ СХЕМОЙ -->
+  <div class="avalanche-section">
+    <div class="avalanche-header">
+      <h3>Лавинный эффект (Кузнечик)</h3>
+      <button (click)="toggleAvalanche()" class="btn btn-accent">
+        {{ showAvalanche ? 'Скрыть тест' : 'Запустить тест' }}
+      </button>
+    </div>
+
+    <!-- Динамическая схема -->
+    <div class="avalanche-scheme" *ngIf="showScheme">
+      <div class="scheme-container">
+        <div class="scheme-block" [class.active]="animationStep >= 1">
+          <div class="scheme-title"> Исходный текст</div>
+          <div class="text-display">
+            <span *ngFor="let ch of text.split(''); let i = index" 
+                  [class.highlight]="animationStep >= 1 && i === 0">{{ ch }}</span>
+          </div>
+          <div class="bytes-display" *ngIf="animationStep >= 3">
+            <strong>Hex (первые 8 байтов):</strong> {{ getFirstBytes() }}
+          </div>
+        </div>
+
+        <div class="scheme-arrow" [class.visible]="animationStep >= 2">
+          <span class="arrow-text">ГОСТ 34.12-2015</span>
+          <div class="arrow-line">→</div>
+        </div>
+
+        <div class="scheme-block" [class.active]="animationStep >= 1">
+          <div class="scheme-title"> Изменённый текст</div>
+          <div class="text-display">
+            <span *ngFor="let ch of mutatedText.split(''); let i = index" 
+                  [class.highlight]="animationStep >= 1 && i === 0"
+                  [class.changed]="animationStep >= 1 && i === 0">{{ ch }}</span>
+          </div>
+          <div class="bytes-display" *ngIf="animationStep >= 3">
+            <strong>Hex (первые 8 байтов):</strong> {{ getMutatedFirstBytes() }}
+          </div>
+        </div>
+      </div>
+
+      <div class="down-arrow" [class.visible]="animationStep >= 3">
+        <span class="arrow-down">▼ ШИФРОВАНИЕ ▼</span>
+      </div>
+
+      <div class="comparison-result" [class.visible]="animationStep >= 4">
+        <div class="result-stats">
+          <div class="stat-red"> Изменилось: {{ diffCount }}/128 бит ({{ (diffCount/128*100).toFixed(1) }}%)</div>
+          <div class="stat-gray"> Не изменилось: {{ 128-diffCount }}/128 бит ({{ ((128-diffCount)/128*100).toFixed(1) }}%)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Визуализация битов (16 байтов × 8 битов) -->
+    <div class="avalanche-content" *ngIf="showAvalanche && animationStep >= 4">
+      <div class="stats-cards">
+        <div class="stat-card changed-card">
+          <div class="stat-label">Изменилось</div>
+          <div class="stat-value">{{ (diffCount/128*100).toFixed(1) }}%</div>
+          <div class="stat-count">({{ diffCount }}/128 бит)</div>
+        </div>
+        <div class="stat-card unchanged-card">
+          <div class="stat-label">Совпало</div>
+          <div class="stat-value">{{ ((128-diffCount)/128*100).toFixed(1) }}%</div>
+          <div class="stat-count">({{ 128-diffCount }}/128 бит)</div>
+        </div>
+      </div>
+
+      <!-- Матрица битов (16 байтов × 8 битов) -->
+      <div class="bit-matrix-container">
+        <div class="byte-grid-16">
+          <div *ngFor="let byte of bitMatrix; let byteIdx = index" class="byte-card">
+            <div class="byte-header">
+              <span>Байт {{ byteIdx }}</span>
+              <span class="byte-hex">{{ getBitMatrixByteHex(byte) }}</span>
+            </div>
+            <div class="bits">
+              <span *ngFor="let bit of byte" class="bit" 
+                    [class.changed]="bit.isChanged" 
+                    [class.same]="!bit.isChanged">
+                {{ bit.value }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Прогресс-бар -->
+      <div class="progress-bar-container">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="(diffCount/128*100)"></div>
+        </div>
+        <div class="progress-note">
+          <span *ngIf="(diffCount/128*100) >= 45 && (diffCount/128*100) <= 55"> Отличный лавинный эффект (близко к 50%)</span>
+          <span *ngIf="(diffCount/128*100) > 55"> Лавинный эффект выше идеала</span>
+          <span *ngIf="(diffCount/128*100) < 45"> Лавинный эффект ниже идеала</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== РАУНДЫ ==================== -->
+  <div *ngIf="showRounds && rounds.length > 0" class="rounds-section">
+    <h3>SP-сеть «Кузнечик»</h3>
+
+    <!-- Легенда -->
+    <div class="byte-legend">
+      <span><span class="legend-dot changed"></span> байт изменился</span>
+      <span><span class="legend-dot unchanged"></span> без изменений</span>
+      <span><span class="legend-dot key-dot"></span> ключ</span>
+    </div>
+
+    <div class="feistel-diagram">
+      
+      <!-- Прогресс -->
+      <div class="round-progress">
+        <div class="progress-track">
+          <div class="progress-fill" [style.width]="(currentRoundData?.round / 10 * 100) + '%'"></div>
+        </div>
+        <span class="progress-label">Раунд {{ currentRoundData?.round }} / 10</span>
+      </div>
+
+      <!-- Навигация -->
+      <div class="round-controls">
+        <button (click)="previousRound()" [disabled]="roundIndex === 0">← Предыдущий</button>
+        <span class="round-indicator">{{ currentRoundData?.round === 10 ? 'ФИНАЛ' : 'АКТИВНЫЙ РАУНД' }}</span>
+        <button (click)="nextRound()" [disabled]="roundIndex === rounds.length - 1">Следующий →</button>
+      </div>
+
+      <!-- Вход раунда -->
+      <div class="state-block">
+        <strong>Вход раунда</strong>
+        <div class="byte-display">
+          <div *ngFor="let byte of (currentRoundData?.input || []); let i = index" class="byte-wrapper">
+            <span class="byte-index">{{ i }}</span>
+            <span class="byte-val">{{ byte.toString(16).padStart(2, '0') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- X -->
+      <div class="transform-step">
+        <span class="step-label">X (XOR с ключом K{{ currentRoundData?.round }})</span>
+        <div class="arrow">↓</div>
+      </div>
+
+      <div class="state-block">
+        <strong>После X</strong>
+        <div class="byte-display">
+          <div *ngFor="let byte of (currentRoundData?.afterX || []); let i = index" class="byte-wrapper">
+            <span class="byte-index">{{ i }}</span>
+            <span class="byte-val" 
+                  [class.changed]="isByteChanged(currentRoundData?.input, currentRoundData?.afterX, i)">
+              {{ byte.toString(16).padStart(2, '0') }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- S -->
+      <div class="transform-step">
+        <span class="step-label">S (S-Box замена)</span>
+        <div class="arrow">↓</div>
+      </div>
+
+      <div class="state-block">
+        <strong>После S</strong>
+        <div class="byte-display">
+          <div *ngFor="let byte of (currentRoundData?.afterS || []); let i = index" class="byte-wrapper">
+            <span class="byte-index">{{ i }}</span>
+            <span class="byte-val" 
+                  [class.changed]="isByteChanged(currentRoundData?.afterX, currentRoundData?.afterS, i)"
+                  (click)="highlightSBox(currentRoundData?.afterX[i], currentRoundData?.afterS[i])"
+                  title="Нажми — увидишь переход в S-Box">
+              {{ byte.toString(16).padStart(2, '0') }}
+            </span>
+          </div>
+        </div>
+        <p class="hint-click"> Нажми на байт — увидишь переход в S-Box</p>
+      </div>
+
+      <!-- L (только для раундов 1-9) -->
+      <ng-container *ngIf="currentRoundData?.round < 10">
+        <div class="transform-step">
+          <span class="step-label">L (Линейное преобразование)</span>
+          <div class="arrow">↓</div>
+        </div>
+
+        <div class="state-block">
+          <strong>После L</strong>
+          <div class="byte-display">
+            <div *ngFor="let byte of (currentRoundData?.afterL || []); let i = index" class="byte-wrapper">
+              <span class="byte-index">{{ i }}</span>
+              <span class="byte-val" 
+                    [class.changed]="isByteChanged(currentRoundData?.afterS, currentRoundData?.afterL, i)">
+                {{ byte.toString(16).padStart(2, '0') }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Выход (раунд 10) -->
+      <div class="state-block output-block" *ngIf="currentRoundData?.round === 10">
+        <strong>Выход шифра</strong>
+        <div class="byte-display output">
+          <div *ngFor="let byte of (currentRoundData?.afterS || []); let i = index" class="byte-wrapper">
+            <span class="byte-index">{{ i }}</span>
+            <span class="byte-val">{{ byte.toString(16).padStart(2, '0') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ключ -->
+      <div class="round-key-block">
+        <strong>Раундовый ключ K{{ currentRoundData?.round }}</strong>
+        <div class="byte-display key">
+          <div *ngFor="let byte of (currentRoundData?.roundKey || []); let i = index" class="byte-wrapper">
+            <span class="byte-index">{{ i }}</span>
+            <span class="byte-val">{{ byte.toString(16).padStart(2, '0') }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S-Box (появляется при клике) -->
+    <div class="sbox-section" *ngIf="showSBox">
+      <div class="sbox-header">
+        <h4>S-Box (π) — ГОСТ Р 34.12-2015</h4>
+        <button class="sbox-close" (click)="showSBox = false">×</button>
+      </div>
+      <p class="sbox-desc" *ngIf="highlightedFrom !== null">
+        Переход: 
+        <strong>{{ getByteHex(highlightedFrom!) }}</strong>
+        → 
+        <strong>{{ getByteHex(highlightedTo!) }}</strong>
+      </p>
+      <div class="sbox-scroll">
+  <table class="sbox-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th *ngFor="let col of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]">{{ col.toString(16).toUpperCase() }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of sboxFull; let i = index">
+        <th>{{ i.toString(16).toUpperCase() }}</th>
+        <td *ngFor="let val of row; let j = index" 
+            [class.sbox-highlight]="isSBoxHighlighted(i, j)"
+            [class.sbox-active]="isSBoxActive(i, j)">
+          {{ val.toString(16).padStart(2, '0').toUpperCase() }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+      <!-- МИНИ-ИСТОРИЯ ПЕРЕХОДОВ -->
+      <div class="sbox-history" *ngIf="transitionHistory.length > 0">
+        <div class="history-header">
+          <span class="history-title">История переходов</span>
+          <button class="history-clear" (click)="clearHistory()">Очистить</button>
+        </div>
+        <div class="history-list">
+          <span 
+            *ngFor="let item of transitionHistory; let i = index" 
+            class="history-item"
+            (click)="replayTransition(item)"
+            title="Нажми — увидишь переход в таблице">
+            <span class="history-from">{{ getByteHex(item.from) }}</span>
+            <span class="history-arrow">→</span>
+            <span class="history-to">{{ getByteHex(item.to) }}</span>
+            <button class="history-remove" (click)="removeTransition(i); $event.stopPropagation()" title="Удалить">×</button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

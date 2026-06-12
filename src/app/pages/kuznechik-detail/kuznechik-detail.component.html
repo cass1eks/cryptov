@@ -1,0 +1,386 @@
+<div class="kuz-page-wrapper">
+    <div class="kuz-container">
+        
+        <!-- НАВИГАЦИЯ -->
+        <nav class="top-nav">
+            <a routerLink="/">ГЛАВНАЯ</a>
+            <a routerLink="/algorithms" class="active">АЛГОРИТМЫ</a>
+            <a href="#">ИССЛЕДОВАНИЯ</a>
+            <a href="javascript:void(0)" (click)="openInteractiveModal()">ИНТЕРАКТИВ</a>
+        </nav>
+
+        <!-- ЗАГОЛОВОК -->
+        <header class="page-header">
+            <div class="header-badge">ГОСТ Р 34.12-2015</div>
+            <h1 class="page-title">ДЕТАЛИЗАЦИЯ: <span>«КУЗНЕЧИК»</span></h1>
+            <p class="page-subtitle">Российский стандарт блочного шифрования</p>
+            <div class="header-line"></div>
+        </header>
+
+        <!-- ЛОГОТИП КУЗНЕЧИК -->
+        <div class="hero-section">
+            <div class="kuz-shield">
+                <div class="shield-content">
+                    <span class="shield-text">ГОСТ</span>
+                    <span class="shield-sub">34.12-2015</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЕТКА СТЕКЛЯННЫХ КАРТОЧЕК -->
+        <div class="glass-panel-container">
+            <div class="glass-grid">
+                
+                <!-- ХАРАКТЕРИСТИКИ -->
+                <div class="glass-card">
+                    <div class="glass-card-edge"></div>
+                    <h3 class="glass-title">ХАРАКТЕРИСТИКИ</h3>
+                    <div class="glass-content">
+                        <div class="stat-row"><span>Размер блока:</span> <span class="highlight">128 бит</span></div>
+                        <div class="stat-row"><span>Длина ключа:</span> <span class="highlight">256 бит</span></div>
+                        <div class="stat-row"><span>Число раундов:</span> <span class="highlight">10</span></div>
+                        <div class="stat-row"><span>Тип сети:</span> <span class="highlight">SP-сеть</span></div>
+                        <div class="stat-row"><span>Размер S-Box:</span> <span class="highlight">256 значений (16×16)</span></div>
+                    </div>
+                </div>
+
+                <!-- СТРУКТУРА -->
+                <div class="glass-card active-card">
+                    <div class="glass-card-edge"></div>
+                    <h3 class="glass-title">СТРУКТУРА</h3>
+                    <div class="glass-content flow">
+                        <div class="node">X[K₀] — XOR с ключом</div>
+                        <div class="connector">↓</div>
+                        <div class="node pulse">9 раундов: S → L → X[Kᵢ]</div>
+                        <div class="connector">↓</div>
+                        <div class="node">Финальный раунд: S → X[K₁₀]</div>
+                        <div class="connector">↓</div>
+                        <div class="node">Выход (128 бит)</div>
+                    </div>
+                </div>
+
+                <!-- S-BOX -->
+                <div class="glass-card interactive" (click)="showSBoxModal = true">
+                    <div class="glass-card-edge"></div>
+                    <h3 class="glass-title">S-BOX (π)</h3>
+                    <div class="glass-content">
+                        <div class="sbox-mini-grid">
+                            <div class="sbox-mini-row"><span>00</span><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>0A</span><span>0B</span><span>0C</span><span>0D</span><span>0E</span><span>0F</span></div>
+                            <div class="sbox-mini-row"><span>FC</span><span>EE</span><span>DD</span><span>11</span><span>CF</span><span>6E</span><span>31</span><span>16</span><span>FB</span><span>C4</span><span>FA</span><span>DA</span><span>23</span><span>C5</span><span>04</span><span>4D</span></div>
+                            <div class="sbox-mini-row"><span>E9</span><span>77</span><span>F0</span><span>DB</span><span>93</span><span>2E</span><span>99</span><span>BA</span><span>17</span><span>36</span><span>F1</span><span>BB</span><span>14</span><span>CD</span><span>5F</span><span>C1</span></div>
+                        </div>
+                        <p class="glass-hint">Нажми, чтобы развернуть ↕</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ФОРМУЛЫ -->
+        <div class="formulas-section">
+            <h3>ОСНОВНЫЕ ФОРМУЛЫ</h3>
+            <p class="section-desc">Нажмите на формулу, чтобы увидеть пояснение</p>
+            <div class="formulas-grid">
+                
+                <div class="formula-card" (click)="openFormula = (openFormula === 'spnet' ? '' : 'spnet')">
+                    <div class="formula-title" [class.active]="openFormula === 'spnet'">
+                        SP-сеть
+                        <span class="formula-hint">нажми для пояснения</span>
+                    </div>
+                    <div class="formula-content">
+                        <code>Round 1..9: X[Kᵢ] → S → L</code>
+                        <code>Round 10: X[K₁₀] → S</code>
+                    </div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'spnet'">
+                        <div class="explanation-item"><strong>X[Kᵢ]</strong> — XOR с раундовым ключом</div>
+                        <div class="explanation-item"><strong>S</strong> — замена через S-Box π</div>
+                        <div class="explanation-item"><strong>L</strong> — линейное преобразование</div>
+                        <div class="explanation-note">Финальный раунд без L-преобразования.</div>
+                    </div>
+                </div>
+
+                <div class="formula-card" (click)="openFormula = (openFormula === 'xfunc' ? '' : 'xfunc')">
+                    <div class="formula-title" [class.active]="openFormula === 'xfunc'">
+                        X-преобразование
+                        <span class="formula-hint">нажми для пояснения</span>
+                    </div>
+                    <div class="formula-content">
+                        <code>X(a, b) = a ⊕ b</code>
+                    </div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'xfunc'">
+                        <div class="explanation-item"><strong>a</strong> — входной вектор</div>
+                        <div class="explanation-item"><strong>b</strong> — раундовый ключ</div>
+                        <div class="explanation-note">Побитовый XOR.</div>
+                    </div>
+                </div>
+
+                <div class="formula-card" (click)="openFormula = (openFormula === 'lfunc' ? '' : 'lfunc')">
+                    <div class="formula-title" [class.active]="openFormula === 'lfunc'">
+                        L-преобразование
+                        <span class="formula-hint">нажми для пояснения</span>
+                    </div>
+                    <div class="formula-content">
+                        <code>L(x) = R¹⁶(x × l) в GF(2⁸)</code>
+                    </div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'lfunc'">
+                        <div class="explanation-item"><strong>R¹⁶</strong> — 16 сдвигов регистра</div>
+                        <div class="explanation-note">Обеспечивает лавинный эффект.</div>
+                    </div>
+                </div>
+
+                <div class="formula-card" (click)="openFormula = (openFormula === 'ctr' ? '' : 'ctr')">
+                    <div class="formula-title" [class.active]="openFormula === 'ctr'">
+                        Режим CTR
+                        <span class="formula-hint">нажми для пояснения</span>
+                    </div>
+                    <div class="formula-content">
+                        <code>C(i) = M(i) ⊕ ГОСТ(Nonce || Counter)</code>
+                    </div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'ctr'">
+                        <div class="explanation-note">Потоковый режим, не требует padding.</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!--         КЛЮЧЕВЫЕ ПОНЯТИЯ                     -->
+        <!-- ============================================ -->
+        <div class="concepts-section">
+            <h3>КЛЮЧЕВЫЕ ПОНЯТИЯ</h3>
+            <div class="concepts-grid">
+                <div class="concept-card">
+                    <div class="concept-title">SP-сеть</div>
+                    <div class="concept-desc">Substitution-Permutation network — архитектура, в которой раунд состоит из слоя подстановки (S) и слоя перестановки (L).</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">S-Box (π)</div>
+                    <div class="concept-desc">Таблица замены из 256 значений. Единственное нелинейное преобразование в алгоритме «Кузнечик».</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">L-преобразование</div>
+                    <div class="concept-desc">Линейное преобразование над вектором 16 байт. Выполняется умножением на фиксированную матрицу в поле GF(2⁸).</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-title">Раундовый ключ</div>
+                    <div class="concept-desc">Ключ, уникальный для каждого раунда. Генерируется из исходного 256-битного ключа с использованием констант и L-преобразования.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!--     ПОДРОБНОЕ ОПИСАНИЕ КУЗНЕЧИКА (ДИНАМИЧЕСКИЙ) -->
+        <!-- ============================================ -->
+        <div class="kuz-detailed-description">
+
+            <!-- === 1. X-преобразование === -->
+            <div class="detail-card">
+                <div class="detail-card-bg-number">01</div>
+                <div class="detail-card-content">
+                    <h2 class="detail-title">{{ content['title_1'] }}</h2>
+                    <p class="detail-text">{{ content['text_1_1'] }}</p>
+                    <p class="detail-text"><strong>Формула:</strong> <code class="inline-code">{{ content['text_1_2'] }}</code></p>
+                    <p class="detail-text">{{ content['text_1_3'] }}</p>
+                    
+                    <div class="kuz-figure" style="text-align: center; margin: 25px 0;">
+                        <div style="display: inline-block;">
+                            <img src="/kuzxx.png" alt="X-преобразование" style="max-width: 600px; width: 100%; height: auto; display: block;">
+                        </div>
+                        <p class="figure-caption">Рис. — X-преобразование (наложение ключа)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 2. S-преобразование === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">02</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_2'] }}</h2>
+                    <p class="detail-text">{{ content['text_2_1'] }}</p>
+                    <p class="detail-text">{{ content['text_2_2'] }}</p>
+                    <p class="detail-text"><strong>Пример:</strong> {{ content['text_2_3'] }}</p>
+                    <div class="sbox-mini-grid" style="margin: 15px 0;">
+                        <div class="sbox-mini-row"><span>00</span><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>0A</span><span>0B</span><span>0C</span><span>0D</span><span>0E</span><span>0F</span></div>
+                        <div class="sbox-mini-row"><span>FC</span><span>EE</span><span>DD</span><span>11</span><span>CF</span><span>6E</span><span>31</span><span>16</span><span>FB</span><span>C4</span><span>FA</span><span>DA</span><span>23</span><span>C5</span><span>04</span><span>4D</span></div>
+                        <div class="sbox-mini-row"><span>E9</span><span>77</span><span>F0</span><span>DB</span><span>93</span><span>2E</span><span>99</span><span>BA</span><span>17</span><span>36</span><span>F1</span><span>BB</span><span>14</span><span>CD</span><span>5F</span><span>C1</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 3. L-преобразование === -->
+            <div class="detail-card">
+                <div class="detail-card-bg-number">03</div>
+                <div class="detail-card-content">
+                    <h2 class="detail-title">{{ content['title_3'] }}</h2>
+                    <p class="detail-text">{{ content['text_3_1'] }}</p>
+                    <p class="detail-text"><strong>Формула:</strong> <code class="inline-code">{{ content['text_3_2'] }}</code></p>
+                    <p class="detail-text">{{ content['text_3_3'] }}</p>
+                    <p class="detail-text">{{ content['text_3_4'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 4. Структура раунда === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">04</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_4'] }}</h2>
+                    <p class="detail-text">{{ content['text_4_1'] }}</p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_4']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text">{{ content['text_4_2'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 5. Генерация ключей === -->
+            <div class="detail-card">
+                <div class="detail-card-bg-number">05</div>
+                <div class="detail-card-content">
+                    <h2 class="detail-title">{{ content['title_5'] }}</h2>
+                    <p class="detail-text">{{ content['text_5_1'] }}</p>
+                    <p class="detail-text"><strong>Этапы:</strong></p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_5']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text"><strong>Особенность:</strong> {{ content['text_5_2'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 6. Режимы работы === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">06</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_6'] }}</h2>
+                    <p class="detail-text">{{ content['text_6_1'] }}</p>
+                    
+                    <h3 class="detail-subtitle">{{ content['subtitle_6_1'] }}</h3>
+                    <p class="detail-text">{{ content['text_6_2'] }}</p>
+
+                    <h3 class="detail-subtitle">{{ content['subtitle_6_2'] }}</h3>
+                    <p class="detail-text">{{ content['text_6_3'] }}</p>
+
+                    <h3 class="detail-subtitle">{{ content['subtitle_6_3'] }}</h3>
+                    <p class="detail-text">{{ content['text_6_4'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 7. Безопасность === -->
+            <div class="detail-card">
+                <div class="detail-card-bg-number">07</div>
+                <div class="detail-card-content">
+                    <h2 class="detail-title">{{ content['title_7'] }}</h2>
+                    <p class="detail-text">{{ content['text_7_1'] }}</p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_7']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text">{{ content['text_7_2'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 8. Где используется === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">08</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_8'] }}</h2>
+                    <ul class="detail-list two-columns">
+                        <li *ngFor="let item of content['list_8']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text">{{ content['text_8_1'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 9. Сравнение с AES === -->
+            <div class="detail-card">
+                <div class="detail-card-bg-number">09</div>
+                <div class="detail-card-content">
+                    <h2 class="detail-title">{{ content['title_9'] }}</h2>
+                    <ul class="detail-list two-columns">
+                        <li *ngFor="let item of content['list_9']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text highlight-text">{{ content['text_9_1'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 10. Коротко об алгоритме === -->
+            <div class="detail-card summary-card">
+                <div class="detail-card-bg-number" style="left: auto; right: 15px;">10</div>
+                <div class="detail-card-content" style="padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_10'] }}</h2>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_10']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text highlight-text">{{ content['text_10_1'] }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2 class="faq-title">ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ</h2>
+            <div class="faq-list">
+                <div class="faq-item" (click)="faqOpen = (faqOpen === 1 ? 0 : 1)">
+                    <div class="faq-question" [class.active]="faqOpen === 1">
+                        <span>Что такое ГОСТ «Кузнечик»?</span>
+                        <span class="faq-icon">{{ faqOpen === 1 ? '-' : '+' }}</span>
+                    </div>
+                    <div class="faq-answer" *ngIf="faqOpen === 1">
+                        <p>ГОСТ Р 34.12-2015 — российский стандарт блочного шифрования с ключом 256 бит.</p>
+                    </div>
+                </div>
+                <div class="faq-item" (click)="faqOpen = (faqOpen === 2 ? 0 : 2)">
+                    <div class="faq-question" [class.active]="faqOpen === 2">
+                        <span>В чём отличие от AES?</span>
+                        <span class="faq-icon">{{ faqOpen === 2 ? '-' : '+' }}</span>
+                    </div>
+                    <div class="faq-answer" *ngIf="faqOpen === 2">
+                        <p>Другой S-Box (π) и L-преобразование. Ключ всегда 256 бит.</p>
+                    </div>
+                </div>
+                <div class="faq-item" (click)="faqOpen = (faqOpen === 3 ? 0 : 3)">
+                    <div class="faq-question" [class.active]="faqOpen === 3">
+                        <span>Мои данные где-то хранятся?</span>
+                        <span class="faq-icon">{{ faqOpen === 3 ? '-' : '+' }}</span>
+                    </div>
+                    <div class="faq-answer" *ngIf="faqOpen === 3">
+                        <p><strong>Нет!</strong> Всё локально в браузере.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- КНОПКА НАЗАД -->
+        <div class="back-section">
+            <a routerLink="/" class="back-button">← НАЗАД К ОБЗОРУ АЛГОРИТМОВ</a>
+        </div>
+
+    </div> <!-- закрытие .kuz-container -->
+</div> <!-- закрытие .kuz-page-wrapper -->
+
+<!-- ============================================ -->
+/*     МОДАЛЬНЫЕ ОКНА (ВНЕ ОСНОВНОГО КОНТЕЙНЕРА)  */
+/* ============================================ -->
+
+<!-- МОДАЛЬНОЕ ОКНО S-BOX -->
+<div class="modal-overlay" *ngIf="showSBoxModal" (click)="showSBoxModal = false">
+    <div class="modal-window" (click)="$event.stopPropagation()">
+        <span class="close-icon" (click)="showSBoxModal = false">&times;</span>
+        <h2 class="modal-title">ПОЛНАЯ ТАБЛИЦА S-BOX (π)</h2>
+        <div class="table-scroll">
+            <table class="full-sbox">
+                <!-- содержимое таблицы -->
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО С ИНТЕРАКТИВНОЙ ВИЗУАЛИЗАЦИЕЙ -->
+<div class="modal-overlay" *ngIf="showInteractiveModal" (click)="closeInteractiveModal()">
+    <div class="modal-window interactive-modal" (click)="$event.stopPropagation()">
+        <span class="close-icon" (click)="closeInteractiveModal()">&times;</span>
+        <h2 class="modal-title">ИНТЕРАКТИВНАЯ ВИЗУАЛИЗАЦИЯ ГОСТ «КУЗНЕЧИК»</h2>
+        <div class="interactive-modal-content">
+            <app-kuznechik-panel></app-kuznechik-panel>
+        </div>
+    </div>
+</div>

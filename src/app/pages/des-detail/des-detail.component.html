@@ -1,0 +1,508 @@
+<div class="des-page-wrapper">
+    <div class="des-container">
+        
+        <!-- НАВИГАЦИЯ -->
+        <nav class="top-nav">
+            <a routerLink="/">ГЛАВНАЯ</a>
+            <a routerLink="/algorithms/des" class="active">АЛГОРИТМЫ</a>
+            <a routerLink="/experiments">ЭКСПЕРИМЕНТЫ</a>
+            <a href="javascript:void(0)" (click)="openInteractiveModal()">ИНТЕРАКТИВ</a>
+        </nav>
+
+        <!-- ЗАГОЛОВОК -->
+        <header class="page-header">
+            <div class="header-badge">FIPS 46-3</div>
+            <h1 class="page-title">ДЕТАЛИЗАЦИЯ: <span>DES</span></h1>
+            <p class="page-subtitle">Data Encryption Standard</p>
+            <div class="header-line"></div>
+        </header>
+
+        <!-- ЛОГОТИП DES -->
+        <div class="hero-section">
+            <div class="cyber-shield">
+                <div class="shield-content">
+                    <span class="shield-text">DES</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЕТКА СТЕКЛЯННЫХ КАРТОЧЕК -->
+        <div class="glass-panel-container">
+            <div class="glass-grid">
+                
+                <!-- ХАРАКТЕРИСТИКИ DES -->
+                <div class="glass-card">
+                    <div class="glass-card-edge"></div>
+                    <h3 class="glass-title">ХАРАКТЕРИСТИКИ DES</h3>
+                    <div class="glass-content">
+                        <div class="stat-row"><span>Размер блока:</span> <span class="highlight">64 бит</span></div>
+                        <div class="stat-row"><span>Размер ключа:</span> <span class="highlight">56 бит (эфф.)</span></div>
+                        <div class="stat-row"><span>Число раундов:</span> <span class="highlight">16</span></div>
+                        <div class="stat-row"><span>Тип сети:</span> <span class="highlight">Фейстеля</span></div>
+                        <div class="stat-row"><span>Количество S-Box:</span> <span class="highlight">8</span></div>
+                    </div>
+                </div>
+
+                <!-- ОБЗОР И СТРУКТУРА -->
+                <div class="glass-card active-card">
+                    <div class="glass-card-edge"></div>
+                    <h3 class="glass-title">СТРУКТУРА DES</h3>
+                    <div class="glass-content flow">
+                        <div class="node">Начальная перестановка (IP)</div>
+                        <div class="connector">↓</div>
+                        <div class="node pulse">16 раундов сети Фейстеля</div>
+                        <div class="connector">↓</div>
+                        <div class="node">Генерация раундовых ключей</div>
+                        <div class="connector">↓</div>
+                        <div class="node">Конечная перестановка (IP⁻¹)</div>
+                    </div>
+                </div>
+
+                <!-- S-BOX МИНИ -->
+                <div class="glass-card interactive" (click)="showModal = true">
+                    <div class="glass-card-edge"></div>
+                    <h3 class="glass-title">S-BOX (пример S1)</h3>
+                    <div class="glass-content">
+                        <table class="glass-table">
+                            <tr><td>14</td><td>04</td><td>13</td><td>01</td><td>02</td><td>15</td><td>11</td><td>08</td></tr>
+                            <tr><td>00</td><td>15</td><td>07</td><td>04</td><td>14</td><td>02</td><td>13</td><td>01</td></tr>
+                            <tr><td>04</td><td>01</td><td>14</td><td>08</td><td>13</td><td>06</td><td>02</td><td>11</td></tr>
+                            <tr><td>15</td><td>12</td><td>08</td><td>02</td><td>04</td><td>09</td><td>01</td><td>07</td></tr>
+                        </table>
+                        <p class="glass-hint">Нажми, чтобы развернуть ↕</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- МОДАЛЬНОЕ ОКНО С ПОЛНЫМ S-BOX -->
+        <div class="modal-overlay" *ngIf="showModal" (click)="showModal = false">
+            <div class="modal-window" (click)="$event.stopPropagation()">
+                <span class="close-icon" (click)="showModal = false">&times;</span>
+                <h2 class="modal-title">ПОЛНАЯ ТАБЛИЦА ЗАМЕНЫ (S-BOX 1)</h2>
+                <div class="table-scroll">
+                    <table class="full-sbox">
+                        <thead>
+                            <tr><th>№</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>0</td><td>14</td><td>4</td><td>13</td><td>1</td><td>2</td><td>15</td><td>11</td><td>8</td><td>3</td><td>10</td><td>6</td><td>12</td><td>5</td><td>9</td><td>0</td><td>7</td></tr>
+                            <tr><td>1</td><td>0</td><td>15</td><td>7</td><td>4</td><td>14</td><td>2</td><td>13</td><td>1</td><td>10</td><td>6</td><td>12</td><td>11</td><td>9</td><td>5</td><td>3</td><td>8</td></tr>
+                            <tr><td>2</td><td>4</td><td>1</td><td>14</td><td>8</td><td>13</td><td>6</td><td>2</td><td>11</td><td>15</td><td>12</td><td>9</td><td>7</td><td>3</td><td>10</td><td>5</td><td>0</td></tr>
+                            <tr><td>3</td><td>15</td><td>12</td><td>8</td><td>2</td><td>4</td><td>9</td><td>1</td><td>7</td><td>5</td><td>11</td><td>3</td><td>14</td><td>10</td><td>0</td><td>6</td><td>13</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ФОРМУЛЫ DES -->
+        <div class="formulas-section">
+            <h3>ОСНОВНЫЕ ФОРМУЛЫ DES</h3>
+            <p class="section-desc">Нажмите на формулу, чтобы увидеть пояснение</p>
+            
+            <div class="formulas-grid">
+                
+                <!-- Сеть Фейстеля -->
+                <div class="formula-card" (click)="openFormula = (openFormula === 'feistel' ? '' : 'feistel')">
+                    <div class="formula-title" [class.active]="openFormula === 'feistel'">
+                        Сеть Фейстеля
+                        <span class="formula-hint">нажми для пояснения</span>
+                    </div>
+                    <div class="formula-content">
+                        <code>L(i) = R(i-1)</code>
+                        <code>R(i) = L(i-1) ⊕ f(R(i-1), K(i))</code>
+                    </div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'feistel'">
+                        <div class="explanation-item"><strong>L(i)</strong> — левая половина блока на i-м раунде (32 бита)</div>
+                        <div class="explanation-item"><strong>R(i)</strong> — правая половина блока на i-м раунде (32 бита)</div>
+                        <div class="explanation-item"><strong>K(i)</strong> — раундовый ключ (48 бит)</div>
+                        <div class="explanation-item"><strong>f</strong> — функция шифрования (Expansion → XOR → S-Box → Permutation)</div>
+                        <div class="explanation-item"><strong>⊕</strong> — операция XOR (исключающее ИЛИ)</div>
+                        <div class="explanation-note">Левая половина просто копируется из правой половины предыдущего раунда. Правая вычисляется через XOR левой половины с результатом F-функции.</div>
+                    </div>
+                </div>
+
+                <!-- F-функция -->
+                <div class="formula-card" (click)="openFormula = (openFormula === 'ffunction' ? '' : 'ffunction')">
+                    <div class="formula-title" [class.active]="openFormula === 'ffunction'">
+                        F-функция
+                        <span class="formula-hint">нажми для пояснения</span>
+                    </div>
+                    <div class="formula-content">
+                        <code>f(R, K) = P(S(E(R) ⊕ K))</code>
+                        <code>E: 32 бит → 48 бит</code>
+                        <code>S: 48 бит → 32 бит</code>
+                        <code>P: перестановка 32 бит</code>
+                    </div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'ffunction'">
+                        <div class="explanation-item"><strong>E (Expansion)</strong> — расширяет 32 бита до 48 бит, дублируя некоторые биты</div>
+                        <div class="explanation-item"><strong>⊕ K</strong> — XOR расширенного блока с 48-битным раундовым ключом</div>
+                        <div class="explanation-item"><strong>S (S-Box)</strong> — 8 таблиц замены, каждая преобразует 6 бит → 4 бита (всего 48→32)</div>
+                        <div class="explanation-item"><strong>P (Permutation)</strong> — финальная перестановка 32 бит для перемешивания</div>
+                        <div class="explanation-note">F-функция — сердце DES. Именно здесь происходит нелинейное преобразование данных с использованием ключа.</div>
+                    </div>
+                </div>
+
+                <!-- Режим CBC -->
+                <div class="formula-card" (click)="openFormula = (openFormula === 'cbc' ? '' : 'cbc')">
+                    <div class="formula-title" [class.active]="openFormula === 'cbc'">
+                        Режим CBC
+                        <span class="formula-hint">нажми для пояснения</span>
+                    </div>
+                    <div class="formula-content">
+                        <code>C(i) = DES(M(i) ⊕ C(i-1))</code>
+                        <code>C(0) = IV</code>
+                    </div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'cbc'">
+                        <div class="explanation-item"><strong>C(i)</strong> — i-й блок шифротекста (64 бита)</div>
+                        <div class="explanation-item"><strong>M(i)</strong> — i-й блок открытого текста (64 бита)</div>
+                        <div class="explanation-item"><strong>IV</strong> — вектор инициализации (Initialization Vector, 64 бита)</div>
+                        <div class="explanation-item"><strong>DES(...)</strong> — операция шифрования алгоритмом DES</div>
+                        <div class="explanation-note">Каждый блок открытого текста XOR-ится с предыдущим шифротекстом перед шифрованием. Это скрывает повторяющиеся паттерны данных.</div>
+                    </div>
+                </div>
+
+                <!-- Режим CTR -->
+                <div class="formula-card" (click)="openFormula = (openFormula === 'ctr' ? '' : 'ctr')">
+                    <div class="formula-title" [class.active]="openFormula === 'ctr'">
+                        Режим CTR
+                        <span class="formula-hint">нажми для пояснения</span>
+                    </div>
+                    <div class="formula-content">
+                        <code>Keystream = DES(Nonce || Counter)</code>
+                        <code>C(i) = M(i) ⊕ Keystream</code>
+                    </div>
+                    <div class="formula-explanation" *ngIf="openFormula === 'ctr'">
+                        <div class="explanation-item"><strong>Nonce</strong> — уникальное число для каждого сеанса (Number used ONCE)</div>
+                        <div class="explanation-item"><strong>Counter</strong> — счётчик, увеличивающийся для каждого блока</div>
+                        <div class="explanation-item"><strong>||</strong> — конкатенация (объединение) Nonce и Counter</div>
+                        <div class="explanation-item"><strong>Keystream</strong> — поток ключей, генерируемый шифрованием счётчика</div>
+                        <div class="explanation-note">CTR — потоковый режим. Не требует padding. Шифрование и расшифрование выполняются одинаково (XOR с keystream).</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- КЛЮЧЕВЫЕ ПОНЯТИЯ DES -->
+<div class="concepts-section">
+    <h3>КЛЮЧЕВЫЕ ПОНЯТИЯ DES</h3>
+    <div class="concepts-grid">
+        
+        <div class="concept-card">
+            <div class="concept-title">Сеть Фейстеля</div>
+            <div class="concept-desc">
+                Архитектура, в которой блок данных делится на две половины (L и R). Каждый раунд: 
+                L<sub>i+1</sub> = R<sub>i</sub>, R<sub>i+1</sub> = L<sub>i</sub> ⊕ F(R<sub>i</sub>, K<sub>i</sub>).
+                Это позволяет использовать одну и ту же функцию для шифрования и расшифрования.
+            </div>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">F-функция</div>
+            <div class="concept-desc">
+                Расширение 32 → 48 бит, XOR с ключом, 8 S-Box (6→4 бита) и P-перестановка.
+                Является единственной нелинейной частью сети Фейстеля.
+            </div>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">S-Box DES</div>
+            <div class="concept-desc">
+                8 таблиц замены (S1…S8), каждая размером 4×16. Преобразуют 6 входных битов в 4 выходных.
+                Ключевой элемент нелинейности DES.
+            </div>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">Раундовый ключ DES</div>
+            <div class="concept-desc">
+                48-битные ключи для каждого из 16 раундов. Генерируются из 56-битного мастер-ключа 
+                (64 бита с битами чётности) через сдвиги и перестановки PC-1, PC-2.
+            </div>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">Начальная перестановка (IP)</div>
+            <div class="concept-desc">
+                Фиксированная перестановка битов входного блока (64 бита) перед первым раундом.
+                Восстанавливается обратной перестановкой FP (IP⁻¹) в конце.
+            </div>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">56-битный ключ</div>
+            <div class="concept-desc">
+                Реальная длина ключа DES — 56 бит (8 байт с битами чётности). 
+                Это делает его уязвимым для полного перебора (2⁵⁶ операций).
+            </div>
+        </div>
+
+    </div>
+</div>
+
+        <!-- ПОДРОБНОЕ ОПИСАНИЕ DES (ДИНАМИЧЕСКИЙ) -->
+        <div class="aes-detailed-description">
+
+            <!-- === 1. Начальная перестановка IP === -->
+            <div class="detail-card">
+                <div class="detail-card-bg-number">01</div>
+                <div class="detail-card-content">
+                    <h2 class="detail-title">{{ content['title_1'] }}</h2>
+                    <p class="detail-text">{{ content['text_1_1'] }}</p>
+                    <p class="detail-text">{{ content['text_1_2'] }}</p>
+                    <p class="detail-text"><strong>Зачем это нужно?</strong> {{ content['text_1_3'] }}</p>
+                    <p class="detail-text">{{ content['text_1_4'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 2. Сеть Фейстеля === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">02</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_2'] }}</h2>
+                    <p class="detail-text">{{ content['text_2_1'] }}</p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_2']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text"><strong>Преимущество сети Фейстеля:</strong> {{ content['text_2_2'] }}</p>
+                    
+                    <div class="mixcolumns-figure" style="text-align: center; margin: 25px 0;">
+                        <div style="background: white; padding: 15px; border-radius: 12px; display: inline-block; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <img src="/des.png" alt="Схема одного раунда сети Фейстеля" style="max-width: 700px; width: 100%; height: auto; display: block;">
+                        </div>
+                        <p class="figure-caption">Рис. — Схема одного раунда сети Фейстеля</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 3. Раундовая функция F === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; left: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">03</div>
+                <div style="position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start;">
+                    <div style="flex: 1; min-width: 100px; margin-top: 125px;">
+                        <h2 class="detail-title" style="padding-left: 0;">{{ content['title_3'] }}</h2>
+                        <p class="detail-text">{{ content['text_3_1'] }}</p>
+                        <p class="detail-text"><strong>Шаги функции F:</strong></p>
+                        <ul class="detail-list">
+                            <li *ngFor="let item of content['list_3']?.split(';')">{{ item }}</li>
+                        </ul>
+                    </div>
+                    <div style="flex: 1; min-width: 280px; text-align: center;">
+                        <div style="display: inline-block;">
+                            <img src="/round.png" alt="Схема раундовой функции F" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+                        </div>
+                        <p class="figure-caption" style="margin-top: 8px;">Рис. — Схема раундовой функции F</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 4. S-Box подстановки === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">04</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_4'] }}</h2>
+                    <p class="detail-text">{{ content['text_4_1'] }}</p>
+                    <p class="detail-text"><strong>Пример S-Box 1:</strong></p>
+                    <div class="sbox-mini-grid" style="margin: 15px 0;">
+                        <div class="sbox-mini-row"><span>14</span><span>4</span><span>13</span><span>1</span><span>2</span><span>15</span><span>11</span><span>8</span></div>
+                        <div class="sbox-mini-row"><span>0</span><span>15</span><span>7</span><span>4</span><span>14</span><span>2</span><span>13</span><span>1</span></div>
+                        <div class="sbox-mini-row"><span>4</span><span>1</span><span>14</span><span>8</span><span>13</span><span>6</span><span>2</span><span>11</span></div>
+                        <div class="sbox-mini-row"><span>15</span><span>12</span><span>8</span><span>2</span><span>4</span><span>9</span><span>1</span><span>7</span></div>
+                    </div>
+                    <p class="detail-text"><strong>Почему S-Box важны?</strong> {{ content['text_4_2'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 5. Генерация ключей === -->
+            <div class="detail-card">
+                <div class="detail-card-bg-number">05</div>
+                <div class="detail-card-content">
+                    <h2 class="detail-title">{{ content['title_5'] }}</h2>
+                    <p class="detail-text">{{ content['text_5_1'] }}</p>
+                    <p class="detail-text"><strong>Этапы:</strong></p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_5']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text"><strong>График сдвигов:</strong> {{ content['text_5_2'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 6. Конечная перестановка === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">06</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_6'] }}</h2>
+                    <p class="detail-text">{{ content['text_6_1'] }}</p>
+                    <p class="detail-text">{{ content['text_6_2'] }}</p>
+                    <p class="detail-text"><strong>Важно:</strong> {{ content['text_6_3'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 7. Режимы работы DES === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; left: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">07</div>
+                <div class="detail-card-content" style="padding-left: 150px;">
+                    <h2 class="detail-title">{{ content['title_7'] }}</h2>
+                    <p class="detail-text">{{ content['text_7_0'] }}</p>
+                    
+                    <!-- ECB -->
+                    <div class="mode-block" style="margin: 40px 0 30px 0; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                        <div class="mode-image" style="text-align: center; margin: 20px 0;">
+                            <div style="display: inline-block;">
+                                <img src="/ecbb.png" alt="Схема режима ECB для DES" style="transform: translateX(-60px);">
+                            </div>
+                            <p class="figure-caption" style="transform: translateX(-55px); margin-top: 8px;">Режим ECB (Electronic Codebook)</p>
+                        </div>
+                        <h3 class="detail-subtitle mode-title" style="margin-top: 15px; margin-bottom: 10px;">{{ content['subtitle_7_1'] }}</h3>
+                        <p class="detail-text">{{ content['text_7_1'] }}</p>
+                        <p class="detail-text warning-text">{{ content['warning_7_1'] }}</p>
+                    </div>
+                    
+                    <!-- CBC -->
+                    <div class="mode-block" style="margin: 40px 0 30px 0; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                        <div class="mode-image" style="text-align: center; margin: 20px 0;">
+                            <div style="display: inline-block;">
+                                <img src="/cbc.png" alt="Схема режима CBC для DES" style="transform: translateX(-60px);">
+                            </div>
+                            <p class="figure-caption" style="transform: translateX(-55px); margin-top: 8px;">Режим CBC (Cipher Block Chaining)</p>
+                        </div>
+                        <h3 class="detail-subtitle mode-title" style="margin-top: 15px; margin-bottom: 10px;">{{ content['subtitle_7_2'] }}</h3>
+                        <p class="detail-text">{{ content['text_7_2'] }}</p>
+                        <p class="detail-text"><strong>Требования к IV:</strong> {{ content['text_7_2a'] }}</p>
+                        <p class="detail-text">{{ content['text_7_2b'] }}</p>
+                    </div>
+                    
+                    <!-- CFB -->
+                    <div class="mode-block" style="margin: 40px 0 30px 0; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                        <div class="mode-image" style="text-align: center; margin: 20px 0;">
+                            <div style="display: inline-block;">
+                                <img src="/cfb.png" alt="Схема режима CFB для DES" style="transform: translateX(-60px);">
+                            </div>
+                            <p class="figure-caption" style="transform: translateX(-55px); margin-top: 8px;">Режим CFB (Cipher Feedback)</p>
+                        </div>
+                        <h3 class="detail-subtitle mode-title" style="margin-top: 15px; margin-bottom: 10px;">{{ content['subtitle_7_3'] }}</h3>
+                        <p class="detail-text">{{ content['text_7_3'] }}</p>
+                        <p class="detail-text">{{ content['text_7_3a'] }}</p>
+                    </div>
+                    
+                    <!-- OFB -->
+                    <div class="mode-block" style="margin: 40px 0 30px 0; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                        <div class="mode-image" style="text-align: center; margin: 20px 0;">
+                            <div style="display: inline-block;">
+                                <img src="/ofb.png" alt="Схема режима OFB для DES" style="transform: translateX(-60px);">
+                            </div>
+                            <p class="figure-caption" style="transform: translateX(-55px); margin-top: 8px;">Режим OFB (Output Feedback)</p>
+                        </div>
+                        <h3 class="detail-subtitle mode-title" style="margin-top: 15px; margin-bottom: 10px;">{{ content['subtitle_7_4'] }}</h3>
+                        <p class="detail-text">{{ content['text_7_4'] }}</p>
+                        <p class="detail-text">{{ content['text_7_4a'] }}</p>
+                    </div>
+                    
+                    <!-- CTR -->
+                    <div class="mode-block" style="margin: 40px 0 30px 0; padding-bottom: 20px;">
+                        <div class="mode-image" style="text-align: center; margin: 20px 0;">
+                            <div style="display: inline-block;">
+                                <img src="/CTR.png" alt="Схема режима CTR для DES" style="transform: translateX(-60px);">
+                            </div>
+                            <p class="figure-caption" style="transform: translateX(-55px); margin-top: 8px;">Режим CTR (Counter Mode)</p>
+                        </div>
+                        <h3 class="detail-subtitle mode-title" style="margin-top: 15px; margin-bottom: 10px;">{{ content['subtitle_7_5'] }}</h3>
+                        <p class="detail-text">{{ content['text_7_5'] }}</p>
+                        <p class="detail-text"><strong>Преимущества:</strong> {{ content['text_7_5a'] }}</p>
+                        <p class="detail-text">{{ content['text_7_5b'] }}</p>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- === 8. Безопасность DES === -->
+            <div class="detail-card" style="position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 10px; right: 15px; font-family: 'Inter', monospace; font-size: 140px; font-weight: 800; color: #94a3b8; opacity: 0.25; pointer-events: none; user-select: none; z-index: 0; line-height: 1;">08</div>
+                <div style="position: relative; z-index: 1; padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_8'] }}</h2>
+                    <p class="detail-text warning-text">{{ content['warning_8'] }}</p>
+                    <p class="detail-text">{{ content['text_8_1'] }}</p>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_8']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text"><strong>Замена:</strong> {{ content['text_8_2'] }}</p>
+                    <p class="detail-text"><strong>Улучшенная версия:</strong> {{ content['text_8_3'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 9. Где использовался DES === -->
+            <div class="detail-card">
+                <div class="detail-card-bg-number">09</div>
+                <div class="detail-card-content">
+                    <h2 class="detail-title">{{ content['title_9'] }}</h2>
+                    <ul class="detail-list two-columns">
+                        <li *ngFor="let item of content['list_9']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text">{{ content['text_9_1'] }}</p>
+                </div>
+            </div>
+
+            <!-- === 10. Коротко об DES === -->
+            <div class="detail-card summary-card">
+                <div class="detail-card-bg-number" style="left: auto; right: 15px;">10</div>
+                <div class="detail-card-content" style="padding-left: 0;">
+                    <h2 class="detail-title" style="padding-left: 0;">{{ content['title_10'] }}</h2>
+                    <ul class="detail-list">
+                        <li *ngFor="let item of content['list_10']?.split(';')">{{ item }}</li>
+                    </ul>
+                    <p class="detail-text highlight-text">{{ content['text_10_1'] }}</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2 class="faq-title">ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ</h2>
+            <div class="faq-list">
+                <div class="faq-item" (click)="faqOpen = (faqOpen === 1 ? 0 : 1)">
+                    <div class="faq-question" [class.active]="faqOpen === 1"><span>Что такое DES-шифрование?</span><span class="faq-icon">{{ faqOpen === 1 ? '−' : '+' }}</span></div>
+                    <div class="faq-answer" *ngIf="faqOpen === 1"><p>DES (Data Encryption Standard) — симметричный блочный шифр, принятый в 1977 году. Использует 56-битный ключ для шифрования 64-битных блоков.</p></div>
+                </div>
+                <div class="faq-item" (click)="faqOpen = (faqOpen === 2 ? 0 : 2)">
+                    <div class="faq-question" [class.active]="faqOpen === 2"><span>В чём разница между ECB и CBC режимами?</span><span class="faq-icon">{{ faqOpen === 2 ? '−' : '+' }}</span></div>
+                    <div class="faq-answer" *ngIf="faqOpen === 2"><p><strong>ECB</strong> — каждый блок шифруется независимо.</p><p><strong>CBC</strong> — каждый блок XOR-ится с предыдущим + IV.</p></div>
+                </div>
+                <div class="faq-item" (click)="faqOpen = (faqOpen === 3 ? 0 : 3)">
+                    <div class="faq-question" [class.active]="faqOpen === 3"><span>Что такое эффект лавины?</span><span class="faq-icon">{{ faqOpen === 3 ? '−' : '+' }}</span></div>
+                    <div class="faq-answer" *ngIf="faqOpen === 3"><p>Изменение 1 бита в тексте меняет ~50% бит шифротекста.</p></div>
+                </div>
+                <div class="faq-item" (click)="faqOpen = (faqOpen === 4 ? 0 : 4)">
+                    <div class="faq-question" [class.active]="faqOpen === 4"><span>Почему DES считается устаревшим?</span><span class="faq-icon">{{ faqOpen === 4 ? '−' : '+' }}</span></div>
+                    <div class="faq-answer" *ngIf="faqOpen === 4"><p>56-битный ключ уязвим для brute-force. Рекомендуется AES или ГОСТ «Кузнечик».</p></div>
+                </div>
+                <div class="faq-item" (click)="faqOpen = (faqOpen === 5 ? 0 : 5)">
+                    <div class="faq-question" [class.active]="faqOpen === 5"><span>Мои данные где-то хранятся?</span><span class="faq-icon">{{ faqOpen === 5 ? '−' : '+' }}</span></div>
+                    <div class="faq-answer" *ngIf="faqOpen === 5"><p><strong>Нет!</strong> Все вычисления локально в браузере. Данные никуда не отправляются.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- КНОПКА НАЗАД -->
+        <div class="back-section">
+            <a routerLink="/" class="back-button">← НАЗАД К ОБЗОРУ АЛГОРИТМОВ</a>
+        </div>
+
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО С ИНТЕРАКТИВНОЙ ВИЗУАЛИЗАЦИЕЙ DES -->
+<div class="modal-overlay" *ngIf="showInteractiveModal" (click)="closeInteractiveModal()">
+    <div class="modal-window interactive-modal" (click)="$event.stopPropagation()">
+        <span class="close-icon" (click)="closeInteractiveModal()">&times;</span>
+        <h2 class="modal-title">ИНТЕРАКТИВНАЯ ВИЗУАЛИЗАЦИЯ DES</h2>
+        <div class="interactive-modal-content">
+            <app-des-panel></app-des-panel>
+        </div>
+    </div>
+</div>
